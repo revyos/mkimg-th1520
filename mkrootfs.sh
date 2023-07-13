@@ -79,6 +79,9 @@ after_mkrootfs()
     chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,sudo debian"
     chroot "$CHROOT_TARGET" sh -c "echo 'debian:debian' | chpasswd"
 
+    chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,sudo sipeed"
+    chroot "$CHROOT_TARGET" sh -c "echo 'sipeed:licheepi' | chpasswd"
+
     # Change hostname
     chroot "$CHROOT_TARGET" sh -c "echo lpi4a > /etc/hostname"
     chroot "$CHROOT_TARGET" sh -c "echo 127.0.1.1 lpi4a >> /etc/hosts"
