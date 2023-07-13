@@ -1,0 +1,4 @@
+config BR2_PACKAGE_RTK_HCIATTACH
+	bool "rtk hciattach"
+	help
+	  rtl8723ds UART utils

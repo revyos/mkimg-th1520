@@ -1,0 +1,12 @@
+[Unit]
+Description=Imagination GPU BXM-4-64 driver init Service.
+
+[Service]
+Type=simple
+EnvironmentFile=-/usr/share/gpu/gpu.env
+ExecStart=sh usr/share/gpu/insmod.sh
+ExecStop=sh usr/share/gpu/rmmod.sh
+RemainAfterExit=y
+
+[Install]
+WantedBy=multi-user.target

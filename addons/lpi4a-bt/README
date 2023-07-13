@@ -1,0 +1,4 @@
+cp -r rootfs/ /path/to/lpi4a_rootfs/
+# note you may be change bootup script, some systemd distro disable /etc/init.d/
+# then install bluez, start bluetoothd, execute bluetoothctl.
+# use power on\n scan on\n, you can look some bluetooth device on terminal.

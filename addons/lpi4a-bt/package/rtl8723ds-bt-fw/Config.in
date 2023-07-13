@@ -1,0 +1,4 @@
+config BR2_PACKAGE_RTL8723DS_BT_FW
+        bool "rtl8723ds bluetooth firmware"
+        help
+	  some blob use for rtl8723ds bluetooth
