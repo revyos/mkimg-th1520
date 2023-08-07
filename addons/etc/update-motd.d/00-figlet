@@ -1,0 +1,10 @@
+#!/bin/sh
+
+. /etc/update-motd.d/colors
+
+printf "\n"$LIGHT_RED
+figlet "  "RuyiSDK
+printf "                   -- Presented by ISCAS"
+printf "\n"
+printf $NONE
+printf "\n"
