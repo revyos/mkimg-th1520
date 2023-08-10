@@ -98,12 +98,8 @@ make_bootable()
     chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_PROMPT=\"2\"' >> /etc/default/u-boot"
     chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_MENU_LABEL=\"RevyOS GNU/Linux\"' >> /etc/default/u-boot"
     chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_PARAMETERS=\"console=ttyS0,115200 rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr rootrwoptions=rw,noatime rootrwreset=yes\"' >> /etc/default/u-boot"
-    chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_FDT=\"light-lpi4a.dtb\"' >> /etc/default/u-boot"
+    chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_FDT_DIR=\"/dtbs/linux-image-\"' >> /etc/default/u-boot"
     chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_ROOT=\"root=/dev/mmcblk0p3\"' >> /etc/default/u-boot"
-
-    # Copy device tree to /boot
-
-    cp -rp "$CHROOT_TARGET"/usr/lib/linux-image-5.10.113-lpi4a/thead/light-lpi4a.dtb "$CHROOT_TARGET"/boot/
 
     # Update extlinux config
     chroot "$CHROOT_TARGET" sh -c "u-boot-update"
@@ -114,6 +110,10 @@ make_bootable()
 
 after_mkrootfs()
 {
+    # Set locale to en_US.UTF-8 UTF-8
+    chroot "$CHROOT_TARGET" sh -c "echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen"
+    chroot "$CHROOT_TARGET" sh -c "locale-gen"
+
     # Set up fstab
     chroot "$CHROOT_TARGET" sh -c "echo '/dev/mmcblk0p3 /   auto    defaults    1 1' >> /etc/fstab"
     chroot "$CHROOT_TARGET" sh -c "echo '/dev/mmcblk0p2 /boot   auto    defaults    0 0' >> /etc/fstab"
@@ -122,10 +122,10 @@ after_mkrootfs()
     # chroot "$CHROOT_TARGET" sh -c "apt update"
     
     # Add user
-    chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,sudo debian"
+    chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,audio,dip,video,plugdev,netdev,bluetooth debian"
     chroot "$CHROOT_TARGET" sh -c "echo 'debian:debian' | chpasswd"
 
-    chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,sudo sipeed"
+    chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,audio,dip,video,plugdev,netdev,bluetooth sipeed"
     chroot "$CHROOT_TARGET" sh -c "echo 'sipeed:licheepi' | chpasswd"
 
     # Change hostname
@@ -217,6 +217,20 @@ cleanup_env()
     echo "Done."
 }
 
+calculate_md5()
+{
+    echo "Calculate MD5 for outputs..."
+		if [ ! -z $IMAGE_FILE ] && [ -f $IMAGE_FILE ]; then
+			echo "$(md5sum $IMAGE_FILE)"
+		fi
+		if [ ! -z $BOOT_IMG ] && [ -f $BOOT_IMG ]; then
+			echo "$(md5sum $BOOT_IMG)"
+		fi
+		if [ ! -z $ROOT_IMG ] && [ -f $ROOT_IMG ]; then
+			echo "$(md5sum $ROOT_IMG)"
+		fi
+}
+
 main()
 {
 # 	install_depends
@@ -243,23 +257,25 @@ clean_on_exit()
 	if [ $? -eq 0 ]; then
 		unmount_image
 		cleanup_env
-		echo "exit."
+		echo "Build succeed."
+        calculate_md5
 	else
+        echo "Interrupted exit $?."
 		unmount_image
 		cleanup_env
-		if [ -f $IMAGE_FILE ]; then
+		if [ ! -z $IMAGE_FILE ] && [ -f $IMAGE_FILE ]; then
 			echo "delete image $IMAGE_FILE ..."
 			rm -v "$IMAGE_FILE"
 		fi
-		if [ -f $BOOT_IMG ]; then
+		if [ ! -z $BOOT_IMG ] && [ -f $BOOT_IMG ]; then
 			echo "delete image $BOOT_IMG ..."
 			rm -v "$BOOT_IMG"
 		fi
-		if [ -f $ROOT_IMG ]; then
+		if [ ! -z $ROOT_IMG ] && [ -f $ROOT_IMG ]; then
 			echo "delete image $ROOT_IMG ..."
 			rm -v "$ROOT_IMG"
 		fi
-		echo "interrupted exit."
+		echo "Build failed."
 	fi
 }
 
