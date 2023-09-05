@@ -103,9 +103,6 @@ make_bootable()
 
     # Update extlinux config
     chroot "$CHROOT_TARGET" sh -c "u-boot-update"
-
-    # Copy firmware to /boot
-    cp -v addons/boot/* "$CHROOT_TARGET"/boot/
 }
 
 after_mkrootfs()

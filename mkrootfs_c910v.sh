@@ -72,7 +72,8 @@ make_rootfs()
     --include="ca-certificates debian-ports-archive-keyring revyos-keyring thead-gles-addons th1520-boot-firmware locales dosfstools \
         $BASE_TOOLS $XFCE_DESKTOP $BENCHMARK_TOOLS $FONTS $INCLUDE_APPS $EXTRA_TOOLS $LIBREOFFICE" \
     sid "$CHROOT_TARGET" \
-    "deb https://mirror.iscas.ac.cn/revyos/revyos-c910v/ revyos-c910v main contrib non-free non-free-firmware" \
+    "deb https://mirror.iscas.ac.cn/revyos/revyos-c910v/ revyos-c910v main" \
+    "deb https://mirror.iscas.ac.cn/revyos/revyos-base/ sid main contrib non-free non-free-firmware" \
     "deb https://mirror.iscas.ac.cn/revyos/revyos-kernels/ revyos-kernels main" \
     "deb https://mirror.iscas.ac.cn/revyos/revyos-addons/ revyos-addons main" \
     "deb https://mirror.iscas.ac.cn/revyos/revyos-gles-21/ revyos-gles-21 main"
@@ -103,9 +104,6 @@ make_bootable()
 
     # Update extlinux config
     chroot "$CHROOT_TARGET" sh -c "u-boot-update"
-
-    # Copy firmware to /boot
-    cp -v addons/boot/* "$CHROOT_TARGET"/boot/
 }
 
 after_mkrootfs()
