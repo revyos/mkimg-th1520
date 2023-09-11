@@ -15,6 +15,9 @@ done
 nmcli general hostname "$HOSTNAME"
 hostname "$HOSTNAME"
 
+# enable ssh mdns service
+cp /usr/share/doc/avahi-daemon/examples/ssh.service /etc/avahi/services/ssh.service
+
 # enable & start avahi daemon
 systemctl enable avahi-daemon
 systemctl restart avahi-daemon
