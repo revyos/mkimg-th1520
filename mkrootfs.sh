@@ -24,7 +24,7 @@ BENCHMARK_TOOLS="glmark2-es2 mesa-utils vulkan-tools iperf3 stress-ng"
 #FONTS="fonts-crosextra-caladea fonts-crosextra-carlito fonts-dejavu fonts-liberation fonts-liberation2 fonts-linuxlibertine fonts-noto-core fonts-noto-cjk fonts-noto-extra fonts-noto-mono fonts-noto-ui-core fonts-sil-gentium-basic"
 FONTS="fonts-noto-core fonts-noto-cjk fonts-noto-mono fonts-noto-ui-core"
 INCLUDE_APPS="chromium libqt5gui5-gles vlc gimp gimp-data-extras gimp-plugin-registry gimp-gmic"
-EXTRA_TOOLS="i2c-tools net-tools ethtool u-boot-tools"
+EXTRA_TOOLS="i2c-tools net-tools ethtool u-boot-tools picocom lrzsz gkermit ckermit ser2net"
 MDNS_TOOLS="avahi-daemon avahi-utils"
 LIBREOFFICE="libreoffice-base \
 libreoffice-calc \
