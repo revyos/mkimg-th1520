@@ -25,6 +25,7 @@ BENCHMARK_TOOLS="glmark2-es2 mesa-utils vulkan-tools iperf3 stress-ng"
 FONTS="fonts-noto-core fonts-noto-cjk fonts-noto-mono fonts-noto-ui-core"
 INCLUDE_APPS="chromium libqt5gui5-gles vlc gimp gimp-data-extras gimp-plugin-registry gimp-gmic"
 EXTRA_TOOLS="i2c-tools net-tools ethtool"
+MDNS_TOOLS="avahi-daemon avahi-utils"
 LIBREOFFICE="libreoffice-base \
 libreoffice-calc \
 libreoffice-core \
@@ -70,7 +71,7 @@ make_rootfs()
 {
     mmdebstrap --architectures=riscv64 \
     --include="ca-certificates debian-ports-archive-keyring revyos-keyring thead-gles-addons th1520-boot-firmware locales dosfstools \
-        $BASE_TOOLS $XFCE_DESKTOP $BENCHMARK_TOOLS $FONTS $INCLUDE_APPS $EXTRA_TOOLS $LIBREOFFICE" \
+        $BASE_TOOLS $XFCE_DESKTOP $BENCHMARK_TOOLS $FONTS $INCLUDE_APPS $MDNS_TOOLS $EXTRA_TOOLS $LIBREOFFICE" \
     sid "$CHROOT_TARGET" \
     "deb https://mirror.iscas.ac.cn/revyos/revyos-base/ sid main contrib non-free non-free-firmware" \
     "deb https://mirror.iscas.ac.cn/revyos/revyos-kernels/ revyos-kernels main" \
