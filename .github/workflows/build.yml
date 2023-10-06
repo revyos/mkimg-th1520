@@ -1,0 +1,90 @@
+name: mkimg-th1520-ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  xuetie_toolchain: https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource//1663142514282
+  toolchain_file_name: Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.6.1-20220906.tar.gz
+  ARCH: riscv
+
+jobs:
+  mkrootfs:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: thead-gcc
+            toolchain_tripe: riscv64-unknown-linux-gnu-
+            apt_triple: riscv64-linux-gnu
+            opts: NO_SHARED=1 TARGET=C910V
+
+    runs-on: ubuntu-22.04
+    env:
+      CROSS_COMPILE: ${{ matrix.toolchain_tripe }}
+
+    steps:
+      - name: Install Software
+        run: |
+              sudo apt update && \
+              sudo apt install -y gdisk dosfstools build-essential autoconf automake autotools-dev ninja-build make \
+                                  libncurses-dev gawk flex bison openssl libssl-dev tree \
+                                  gcc-${{ matrix.apt_triple }} gfortran-${{ matrix.apt_triple }} libgomp1-riscv64-cross \
+                                  qemu-user-static binfmt-support mmdebstrap 
+              wget https://mirror.iscas.ac.cn/revyos/revyos-addons/pool/main/r/revyos-keyring/revyos-keyring_2023.06.12_all.deb
+              sudo apt install ./revyos-keyring_2023.06.12_all.deb
+
+      - name: Configure Toolchains
+        run: |
+              # Install thead-gcc-toolchain
+              wget ${xuetie_toolchain}/${toolchain_file_name}
+              tar -xvf ${toolchain_file_name} -C /opt
+
+      - name: Checkout qemu
+        uses: actions/checkout@v3
+        with:
+          repository: revyos/qemu
+          path: qemu
+          ref: ab8f84892a89feea60f1bb24432ff58ce6d2885c
+
+      - name: build qemu
+        run: |
+            pushd qemu
+              ./configure \
+                --prefix=$HOME/qemu-install \
+                --static \
+                --target-list=riscv64-linux-user \
+                --disable-system \
+                --disable-pie \
+                --interp-prefix=/etc/qemu-binfmt/%M
+              make -j$(nproc)
+              make install
+
+              sudo cp -fv $HOME/qemu-install/bin/qemu-riscv64 /usr/bin/qemu-riscv64-static
+            popd
+            ls -al /usr/bin/qemu-riscv64-static
+            sudo dpkg-reconfigure binfmt-support
+
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+            repository: 'revyos/mkimg-th1520'
+            path: 'mkimg-th1520'
+
+      - name: Make Image
+        run: |
+              export PATH="/opt/Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.6.1/bin:$PATH"
+
+              pushd mkimg-th1520
+                sudo ./mkrootfs.sh
+              popd
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 30
+          name: Output
+          path: |
+                  mkimg-th1520/*.ext4
