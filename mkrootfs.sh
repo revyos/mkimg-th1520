@@ -168,7 +168,7 @@ after_mkrootfs()
     sed -i "s/Exec=\/usr\/bin\/chromium/Exec=\/usr\/bin\/chromium --no-sandbox --use-gl=egl/gi" "$CHROOT_TARGET"/usr/share/applications/chromium.desktop
 
     # Temp add HDMI audio output on Volume control
-    echo "load-module module-alsa-sink device=hw:0,2" >> "$CHROOT_TARGET"/etc/pulse/default.pa
+    echo "load-module module-alsa-sink device=hw:0,2 tsched=0" >> "$CHROOT_TARGET"/etc/pulse/default.pa
 
     # Change xfce4-panel default web-browser icon to chromium
     sed -i 's/xfce4-web-browser.desktop/chromium.desktop/g' "$CHROOT_TARGET"/etc/xdg/xfce4/panel/default.xml 
