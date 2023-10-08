@@ -26,6 +26,11 @@ jobs:
       CROSS_COMPILE: ${{ matrix.toolchain_tripe }}
 
     steps:
+      - name: Create Timestamp
+        run: |
+              echo "BUILD_ID=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_ENV
+              echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+
       - name: Install Software
         run: |
               sudo apt update && \
@@ -77,14 +82,28 @@ jobs:
         run: |
               export PATH="/opt/Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.6.1/bin:$PATH"
 
+              # make revyos-release on CI
               pushd mkimg-th1520
+                echo "BUILD_ID=${{ env.BUILD_ID }}" >> revyos-release
+                echo "BUILD_DATE=${{ env.BUILD_DATE }}" >> revyos-release
+                echo "COMMIT_ID=${{ github.sha }}" >> revyos-release
+                echo "RUNNER_ID=${{ github.run_id }}" >> revyos-release
                 sudo ./mkrootfs.sh
               popd
+
+      - name: Make Checksum File
+        run: |
+            pushd mkimg-th1520
+              sha256sum *.ext4 > SHA256SUMS
+              sha512sum *.ext4 > SHA512SUMS
+            popd
 
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v3
         with:
           retention-days: 30
-          name: Output
+          name: th1520-${{ env.BUILD_ID }}
           path: |
                   mkimg-th1520/*.ext4
+                  mkimg-th1520/SHA256SUMS
+                  mkimg-th1520/SHA512SUMS

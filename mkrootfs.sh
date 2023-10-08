@@ -49,6 +49,11 @@ TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
 make_imagefile()
 {
+    if [ -f revyos-release ]; then
+        echo "Found revyos-release, using timestamp in this file."
+        . ./revyos-release
+        TIMESTAMP=${BUILD_ID}
+    fi
     BOOT_IMG="boot-$TIMESTAMP.ext4"
     truncate -s "$BOOT_SIZE" "$BOOT_IMG"
     ROOT_IMG="root-$TIMESTAMP.ext4"
@@ -136,7 +141,11 @@ after_mkrootfs()
     chroot "$CHROOT_TARGET" sh -c "echo 127.0.1.1 lpi4a >> /etc/hosts"
 
     # Add timestamp file in /etc
-    echo "$TIMESTAMP" > rootfs/etc/revyos-release
+    if [ ! -f revyos-release ]; then
+        echo "$TIMESTAMP" > rootfs/etc/revyos-release
+    else
+        cp -v revyos-release rootfs/etc/revyos-release
+    fi
 
     # remove openssh keys
     rm -v rootfs/etc/ssh/ssh_host_*
