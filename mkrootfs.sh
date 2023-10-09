@@ -185,8 +185,18 @@ after_mkrootfs()
     # Fix cann't connect bluetooth headphone
     sed -i 's/load-module module-bluetooth-policy/load-module module-bluetooth-policy auto_switch=false/g' "$CHROOT_TARGET"/etc/pulse/default.pa
 
+    # Fix cursor offset using software cursor
+    cat << EOF > "$CHROOT_TARGET"/usr/share/X11/xorg.conf.d/10-modsetting.conf
+Section "Device"
+	Identifier "Mouse"
+	Driver "modesetting"
+	#Option "AccelMethod" "none"
+	Option "SWCursor" "true"
+EndSection
+EOF
+
     # Install other packages
-    chroot "$CHROOT_TARGET" sh -c "apt install -y parole th1520-vpu"
+    chroot "$CHROOT_TARGET" sh -c "apt install -y parole th1520-vpu libgl4es"
 
     # Setup branding related
     chroot "$CHROOT_TARGET" sh -c "apt install -y $BRANDING "
