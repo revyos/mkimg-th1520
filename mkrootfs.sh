@@ -78,6 +78,9 @@ make_rootfs()
     "deb https://mirror.iscas.ac.cn/revyos/revyos-addons/ revyos-addons main" \
     "deb https://mirror.iscas.ac.cn/revyos/revyos-gles-21/ revyos-gles-21 main"
 
+    # move /boot contents to other place
+    mv -v "$CHROOT_TARGET"/boot/* "$CHROOT_TARGET"/mnt/
+
     # Mount chroot path
     mount "$BOOT_IMG" "$CHROOT_TARGET"/boot
     mount -t proc /proc "$CHROOT_TARGET"/proc
@@ -85,6 +88,9 @@ make_rootfs()
     mount -B /run "$CHROOT_TARGET"/run
     mount -B /dev "$CHROOT_TARGET"/dev
     mount -B /dev/pts "$CHROOT_TARGET"/dev/pts
+
+    # move boot contents back to /boot
+    mv -v "$CHROOT_TARGET"/mnt/* "$CHROOT_TARGET"/boot/
 
     # apt update
     chroot "$CHROOT_TARGET" sh -c "apt update"
@@ -104,9 +110,6 @@ make_bootable()
 
     # Update extlinux config
     chroot "$CHROOT_TARGET" sh -c "u-boot-update"
-
-    # Copy firmware to /boot
-    cp -v addons/boot/* "$CHROOT_TARGET"/boot/
 }
 
 after_mkrootfs()
@@ -191,6 +194,9 @@ after_mkrootfs()
     # refresh so libs
     chroot "$CHROOT_TARGET" sh -c "rm -v /etc/ld.so.cache"
     chroot "$CHROOT_TARGET" sh -c "ldconfig"
+
+    # Clean apt caches
+    rm -r "$CHROOT_TARGET"/var/lib/apt/lists/*
 }
 
 unmount_image()
