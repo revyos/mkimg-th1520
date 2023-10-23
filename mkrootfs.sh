@@ -17,7 +17,7 @@ ROOT_MOUNTPOINT=""
 
 KERNEL="linux-headers-5.10.113-lpi4a linux-image-5.10.113-lpi4a linux-perf-thead"
 BASE_TOOLS="binutils file tree sudo bash-completion u-boot-menu initramfs-tools openssh-server network-manager dnsmasq-base libpam-systemd ppp wireless-regdb wpasupplicant libengine-pkcs11-openssl iptables systemd-timesyncd vim usbutils libgles2 parted exfatprogs systemd-sysv mesa-vulkan-drivers"
-XFCE_DESKTOP="xorg xfce4 desktop-base lightdm xfce4-terminal tango-icon-theme xfce4-notifyd xfce4-power-manager network-manager-gnome xfce4-goodies pulseaudio alsa-utils dbus-user-session rtkit pavucontrol thunar-volman eject gvfs gvfs-backends udisks2 dosfstools e2fsprogs libblockdev-crypto2 ntfs-3g polkitd blueman xarchiver"
+XFCE_DESKTOP="xorg xfce4 desktop-base lightdm xfce4-terminal tango-icon-theme xfce4-notifyd xfce4-power-manager network-manager-gnome xfce4-goodies pulseaudio pulseaudio-module-bluetooth alsa-utils dbus-user-session rtkit pavucontrol thunar-volman eject gvfs gvfs-backends udisks2 dosfstools e2fsprogs libblockdev-crypto2 ntfs-3g polkitd blueman xarchiver"
 GNOME_DESKTOP="gnome-core avahi-daemon desktop-base file-roller gnome-tweaks gstreamer1.0-libav gstreamer1.0-plugins-ugly libgsf-bin libproxy1-plugin-networkmanager network-manager-gnome"
 KDE_DESKTOP="kde-plasma-desktop"
 BENCHMARK_TOOLS="glmark2-es2 mesa-utils vulkan-tools iperf3 stress-ng"
@@ -122,6 +122,10 @@ after_mkrootfs()
     chroot "$CHROOT_TARGET" sh -c "echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen"
     chroot "$CHROOT_TARGET" sh -c "locale-gen"
 
+    # Set default timezone to Asia/Shanghai
+    chroot "$CHROOT_TARGET" sh -c "ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime"
+    echo "Asia/Shanghai" > rootfs/etc/timezone
+
     # Set up fstab
     chroot "$CHROOT_TARGET" sh -c "echo '/dev/mmcblk0p3 /   auto    defaults    1 1' >> /etc/fstab"
     chroot "$CHROOT_TARGET" sh -c "echo '/dev/mmcblk0p2 /boot   auto    defaults    0 0' >> /etc/fstab"
@@ -196,7 +200,7 @@ EndSection
 EOF
 
     # Install other packages
-    chroot "$CHROOT_TARGET" sh -c "apt install -y parole th1520-vpu libgl4es"
+    chroot "$CHROOT_TARGET" sh -c "apt install -y mpv parole th1520-vpu libgl4es"
 
     # Setup branding related
     chroot "$CHROOT_TARGET" sh -c "apt install -y $BRANDING "
