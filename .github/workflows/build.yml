@@ -2,6 +2,8 @@ name: mkimg-th1520-ci
 
 on:
   push:
+    tags:        
+      - '*'
   pull_request:
   workflow_dispatch:
 
@@ -18,8 +20,7 @@ jobs:
         include:
           - name: thead-gcc
             toolchain_tripe: riscv64-unknown-linux-gnu-
-            apt_triple: riscv64-linux-gnu
-            opts: NO_SHARED=1 TARGET=C910V
+            apt_triple: riscv64-linux-gnu  # TODO: remove this line
 
     runs-on: ubuntu-22.04
     env:
@@ -52,7 +53,7 @@ jobs:
         with:
           repository: revyos/qemu
           path: qemu
-          ref: ab8f84892a89feea60f1bb24432ff58ce6d2885c
+          ref: ab8f84892a89feea60f1bb24432ff58ce6d2885c  # TODO: remove this line
 
       - name: build qemu
         run: |
@@ -75,8 +76,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
         with:
-            repository: 'revyos/mkimg-th1520'
-            path: 'mkimg-th1520'
+            path: 'mkimg-th1520'  # TODO: make this name a global variable
 
       - name: Make Image
         run: |
@@ -86,6 +86,7 @@ jobs:
               pushd mkimg-th1520
                 echo "BUILD_ID=${{ env.BUILD_ID }}" >> revyos-release
                 echo "BUILD_DATE=${{ env.BUILD_DATE }}" >> revyos-release
+                echo "RELEASE_ID=${{ github.ref_name }}" >> revyos-release
                 echo "COMMIT_ID=${{ github.sha }}" >> revyos-release
                 echo "RUNNER_ID=${{ github.run_id }}" >> revyos-release
                 sudo ./mkrootfs.sh
