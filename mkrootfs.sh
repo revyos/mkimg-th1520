@@ -192,7 +192,7 @@ after_mkrootfs()
     # Fix cursor offset using software cursor
     cat << EOF > "$CHROOT_TARGET"/usr/share/X11/xorg.conf.d/10-modsetting.conf
 Section "Device"
-	Identifier "Mouse"
+	Identifier "PVR"
 	Driver "modesetting"
 	#Option "AccelMethod" "none"
 	Option "SWCursor" "true"
