@@ -24,7 +24,7 @@ BENCHMARK_TOOLS="glmark2-es2 mesa-utils vulkan-tools iperf3 stress-ng"
 #FONTS="fonts-crosextra-caladea fonts-crosextra-carlito fonts-dejavu fonts-liberation fonts-liberation2 fonts-linuxlibertine fonts-noto-core fonts-noto-cjk fonts-noto-extra fonts-noto-mono fonts-noto-ui-core fonts-sil-gentium-basic"
 FONTS="fonts-noto-core fonts-noto-cjk fonts-noto-mono fonts-noto-ui-core"
 INCLUDE_APPS="chromium libqt5gui5-gles vlc gimp gimp-data-extras gimp-plugin-registry gimp-gmic"
-EXTRA_TOOLS="i2c-tools net-tools ethtool"
+EXTRA_TOOLS="i2c-tools net-tools ethtool xdotool"
 LIBREOFFICE="libreoffice-base \
 libreoffice-calc \
 libreoffice-core \
@@ -77,10 +77,10 @@ make_rootfs()
     --include="ca-certificates debian-ports-archive-keyring revyos-keyring thead-gles-addons th1520-boot-firmware locales dosfstools \
         $BASE_TOOLS $XFCE_DESKTOP $BENCHMARK_TOOLS $FONTS $INCLUDE_APPS $EXTRA_TOOLS $LIBREOFFICE" \
     sid "$CHROOT_TARGET" \
+    "deb https://mirror.iscas.ac.cn/revyos/revyos-gles-21/ revyos-gles-21 main" \
     "deb https://mirror.iscas.ac.cn/revyos/revyos-base/ sid main contrib non-free non-free-firmware" \
     "deb https://mirror.iscas.ac.cn/revyos/revyos-kernels/ revyos-kernels main" \
-    "deb https://mirror.iscas.ac.cn/revyos/revyos-addons/ revyos-addons main" \
-    "deb https://mirror.iscas.ac.cn/revyos/revyos-gles-21/ revyos-gles-21 main"
+    "deb https://mirror.iscas.ac.cn/revyos/revyos-addons/ revyos-addons main"
 
     # move /boot contents to other place
     mv -v "$CHROOT_TARGET"/boot/* "$CHROOT_TARGET"/mnt/
