@@ -4,6 +4,8 @@ on:
   push:
     tags:        
       - '*'
+    branches:
+      - '*'
   pull_request:
   workflow_dispatch:
 
@@ -16,15 +18,8 @@ jobs:
   mkrootfs:
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - name: thead-gcc
-            toolchain_tripe: riscv64-unknown-linux-gnu-
-            apt_triple: riscv64-linux-gnu  # TODO: remove this line
 
     runs-on: ubuntu-22.04
-    env:
-      CROSS_COMPILE: ${{ matrix.toolchain_tripe }}
 
     steps:
       - name: Create Timestamp
@@ -37,16 +32,10 @@ jobs:
               sudo apt update && \
               sudo apt install -y gdisk dosfstools build-essential autoconf automake autotools-dev ninja-build make \
                                   libncurses-dev gawk flex bison openssl libssl-dev tree \
-                                  gcc-${{ matrix.apt_triple }} gfortran-${{ matrix.apt_triple }} libgomp1-riscv64-cross \
+                                  gcc-riscv64-linux-gnu gfortran-riscv64-linux-gnu libgomp1-riscv64-cross \
                                   qemu-user-static binfmt-support mmdebstrap 
               wget https://mirror.iscas.ac.cn/revyos/revyos-addons/pool/main/r/revyos-keyring/revyos-keyring_2023.06.12_all.deb
               sudo apt install ./revyos-keyring_2023.06.12_all.deb
-
-      - name: Configure Toolchains
-        run: |
-              # Install thead-gcc-toolchain
-              wget ${xuetie_toolchain}/${toolchain_file_name}
-              tar -xvf ${toolchain_file_name} -C /opt
 
       - name: Checkout qemu
         uses: actions/checkout@v3
@@ -92,11 +81,12 @@ jobs:
                 sudo ./mkrootfs.sh
               popd
 
-      - name: Make Checksum File
+      - name: Make Checksum file & Compress files
         run: |
             pushd mkimg-th1520
               sha256sum *.ext4 > SHA256SUMS
               sha512sum *.ext4 > SHA512SUMS
+              zstd *.ext4
             popd
 
       - name: 'Upload Artifact'
@@ -105,6 +95,15 @@ jobs:
           retention-days: 30
           name: th1520-${{ env.BUILD_ID }}
           path: |
-                  mkimg-th1520/*.ext4
+                  mkimg-th1520/*.ext4.zst
+                  mkimg-th1520/SHA256SUMS
+                  mkimg-th1520/SHA512SUMS
+
+      - name: 'Create release by tag'
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+                  mkimg-th1520/*.ext4.zst
                   mkimg-th1520/SHA256SUMS
                   mkimg-th1520/SHA512SUMS
