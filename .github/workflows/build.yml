@@ -107,3 +107,4 @@ jobs:
                   mkimg-th1520/*.ext4.zst
                   mkimg-th1520/SHA256SUMS
                   mkimg-th1520/SHA512SUMS
+          token: ${{ secrets.GITHUB_TOKEN }}
