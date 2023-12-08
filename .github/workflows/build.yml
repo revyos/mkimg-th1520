@@ -16,8 +16,12 @@ jobs:
   mkrootfs:
     strategy:
       fail-fast: false
+      matrix:
+        model: [lpi4a, ahead]
 
     runs-on: ubuntu-22.04
+    env:
+      BOARD: ${{ matrix.model }}
 
     steps:
       - name: Create Timestamp
