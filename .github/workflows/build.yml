@@ -2,7 +2,7 @@ name: mkimg-th1520-ci
 
 on:
   push:
-    tags:        
+    tags:
       - '*'
     branches:
       - '*'
@@ -10,8 +10,6 @@ on:
   workflow_dispatch:
 
 env:
-  xuetie_toolchain: https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource//1663142514282
-  toolchain_file_name: Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.6.1-20220906.tar.gz
   ARCH: riscv
 
 jobs:
@@ -69,8 +67,6 @@ jobs:
 
       - name: Make Image
         run: |
-              export PATH="/opt/Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.6.1/bin:$PATH"
-
               # make revyos-release on CI
               pushd mkimg-th1520
                 echo "BUILD_ID=${{ env.BUILD_ID }}" >> revyos-release
