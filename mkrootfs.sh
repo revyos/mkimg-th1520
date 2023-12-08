@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-BOARD=
+BOARD=${BOARD:-lpi4a} # lpi4a, ahead
 IMAGE_SIZE=4500M
 IMAGE_FILE=""
 BOOT_SIZE=500M
@@ -15,7 +15,11 @@ EFI_MOUNTPOINT=""
 BOOT_MOUNTPOINT=""
 ROOT_MOUNTPOINT=""
 
-KERNEL="linux-headers-5.10.113-lpi4a linux-image-5.10.113-lpi4a linux-perf-thead"
+# == kernel variables ==
+KERNEL_lpi4a="linux-headers-5.10.113-lpi4a linux-image-5.10.113-lpi4a linux-perf-thead"
+KERNEL_ahead="linux-headers-5.10.113-ahead linux-image-5.10.113-ahead linux-perf-thead"
+KERNEL=$(eval echo '$'"KERNEL_${BOARD}")
+
 BASE_TOOLS="binutils file tree sudo bash-completion u-boot-menu initramfs-tools openssh-server network-manager dnsmasq-base libpam-systemd ppp wireless-regdb wpasupplicant libengine-pkcs11-openssl iptables systemd-timesyncd vim usbutils libgles2 parted exfatprogs systemd-sysv mesa-vulkan-drivers"
 XFCE_DESKTOP="xorg xfce4 desktop-base lightdm xfce4-terminal tango-icon-theme xfce4-notifyd xfce4-power-manager network-manager-gnome xfce4-goodies pulseaudio pulseaudio-module-bluetooth alsa-utils dbus-user-session rtkit pavucontrol thunar-volman eject gvfs gvfs-backends udisks2 dosfstools e2fsprogs libblockdev-crypto2 ntfs-3g polkitd blueman xarchiver"
 GNOME_DESKTOP="gnome-core avahi-daemon desktop-base file-roller gnome-tweaks gstreamer1.0-libav gstreamer1.0-plugins-ugly libgsf-bin libproxy1-plugin-networkmanager network-manager-gnome"
@@ -137,12 +141,14 @@ after_mkrootfs()
     chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,audio,dip,video,plugdev,netdev,bluetooth debian"
     chroot "$CHROOT_TARGET" sh -c "echo 'debian:debian' | chpasswd"
 
-    chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,audio,dip,video,plugdev,netdev,bluetooth sipeed"
-    chroot "$CHROOT_TARGET" sh -c "echo 'sipeed:licheepi' | chpasswd"
+    if [ "x${BOARD}" -eq "xlpi4a" ]; then
+        chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,audio,dip,video,plugdev,netdev,bluetooth sipeed"
+        chroot "$CHROOT_TARGET" sh -c "echo 'sipeed:licheepi' | chpasswd"
+    fi
 
     # Change hostname
-    chroot "$CHROOT_TARGET" sh -c "echo lpi4a > /etc/hostname"
-    chroot "$CHROOT_TARGET" sh -c "echo 127.0.1.1 lpi4a >> /etc/hosts"
+    chroot "$CHROOT_TARGET" sh -c "echo ${BOARD} > /etc/hostname"
+    chroot "$CHROOT_TARGET" sh -c "echo 127.0.1.1 ${BOARD} >> /etc/hosts"
 
     # Add timestamp file in /etc
     if [ ! -f revyos-release ]; then
@@ -157,11 +163,13 @@ after_mkrootfs()
     # copy addons to rootfs
     cp -rp addons/lib/firmware rootfs/lib/
 
-    # Add Bluetooth firmware and service
-    cp -rp addons/lpi4a-bt/rootfs/usr/local/bin/rtk_hciattach rootfs/usr/local/bin/
-    cp -rp addons/lpi4a-bt/rootfs/lib/firmware/rtlbt/rtl8723d_config rootfs/lib/firmware/rtlbt/
-    cp -rp addons/lpi4a-bt/rootfs/lib/firmware/rtlbt/rtl8723d_fw rootfs/lib/firmware/rtlbt/
-    cp -rp addons/etc/systemd/system/rtk-hciattach.service rootfs/etc/systemd/system/
+    if [ "x${BOARD}" -eq "xlpi4a" ]; then
+        # Add Bluetooth firmware and service
+        cp -rp addons/lpi4a-bt/rootfs/usr/local/bin/rtk_hciattach rootfs/usr/local/bin/
+        cp -rp addons/lpi4a-bt/rootfs/lib/firmware/rtlbt/rtl8723d_config rootfs/lib/firmware/rtlbt/
+        cp -rp addons/lpi4a-bt/rootfs/lib/firmware/rtlbt/rtl8723d_fw rootfs/lib/firmware/rtlbt/
+        cp -rp addons/etc/systemd/system/rtk-hciattach.service rootfs/etc/systemd/system/
+    fi
 
     # Add firstboot service
     cp -rp addons/etc/systemd/system/firstboot.service rootfs/etc/systemd/system/
@@ -170,7 +178,9 @@ after_mkrootfs()
     # Install system services
     chroot "$CHROOT_TARGET" sh -c "systemctl enable pvrsrvkm"
     chroot "$CHROOT_TARGET" sh -c "systemctl enable firstboot"
-    chroot "$CHROOT_TARGET" sh -c "systemctl enable rtk-hciattach"
+    if [ "x${BOARD}" -eq "xlpi4a" ]; then
+        chroot "$CHROOT_TARGET" sh -c "systemctl enable rtk-hciattach"
+    fi
 
     # Use iptables-legacy for docker
     chroot "$CHROOT_TARGET" sh -c "update-alternatives --set iptables /usr/sbin/iptables-legacy"
