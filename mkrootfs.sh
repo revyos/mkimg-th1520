@@ -190,12 +190,10 @@ after_mkrootfs()
     sed -i 's/load-module module-bluetooth-policy/load-module module-bluetooth-policy auto_switch=false/g' "$CHROOT_TARGET"/etc/pulse/default.pa
 
     # Fix cursor offset using software cursor
-    cat << EOF > "$CHROOT_TARGET"/usr/share/X11/xorg.conf.d/10-modsetting.conf
+    cat << EOF > "$CHROOT_TARGET"/usr/share/X11/xorg.conf.d/10-gc620.conf
 Section "Device"
-	Identifier "PVR"
-	Driver "modesetting"
-	#Option "AccelMethod" "none"
-	Option "SWCursor" "true"
+	Identifier "dc8200"
+	Driver "thead"
 EndSection
 EOF
 
