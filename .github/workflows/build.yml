@@ -93,7 +93,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           retention-days: 30
-          name: th1520-${{ env.BUILD_ID }}
+          name: th1520-${{ env.BOARD }}-${{ env.BUILD_ID }}
           path: |
                   mkimg-th1520/*.ext4.zst
                   mkimg-th1520/SHA256SUMS
