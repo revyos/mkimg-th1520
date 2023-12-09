@@ -58,9 +58,9 @@ make_imagefile()
         . ./revyos-release
         TIMESTAMP=${BUILD_ID}
     fi
-    BOOT_IMG="boot-$TIMESTAMP.ext4"
+    BOOT_IMG="boot-$BOARD-$TIMESTAMP.ext4"
     truncate -s "$BOOT_SIZE" "$BOOT_IMG"
-    ROOT_IMG="root-$TIMESTAMP.ext4"
+    ROOT_IMG="root-$BOARD-$TIMESTAMP.ext4"
     truncate -s "$ROOT_SIZE" "$ROOT_IMG"
 
     # Format partitions
@@ -141,7 +141,8 @@ after_mkrootfs()
     chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,netdev,bluetooth,lp debian"
     chroot "$CHROOT_TARGET" sh -c "echo 'debian:debian' | chpasswd"
 
-    if [ "x${BOARD}" -eq "xlpi4a" ]; then
+    if [ "${BOARD}" == "lpi4a" ]; then
+        echo "lpi4a specific: Add sipeed user"
         chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,netdev,bluetooth,lp sipeed"
         chroot "$CHROOT_TARGET" sh -c "echo 'sipeed:licheepi' | chpasswd"
     fi
@@ -163,7 +164,8 @@ after_mkrootfs()
     # copy addons to rootfs
     cp -rp addons/lib/firmware rootfs/lib/
 
-    if [ "x${BOARD}" -eq "xlpi4a" ]; then
+    if [ "${BOARD}" == "lpi4a" ]; then
+        echo "lpi4a specific: Add RTL8723DS Service"
         # Add Bluetooth firmware and service
         cp -rp addons/lpi4a-bt/rootfs/usr/local/bin/rtk_hciattach rootfs/usr/local/bin/
         cp -rp addons/lpi4a-bt/rootfs/lib/firmware/rtlbt/rtl8723d_config rootfs/lib/firmware/rtlbt/
@@ -178,7 +180,8 @@ after_mkrootfs()
     # Install system services
     chroot "$CHROOT_TARGET" sh -c "systemctl enable pvrsrvkm"
     chroot "$CHROOT_TARGET" sh -c "systemctl enable firstboot"
-    if [ "x${BOARD}" -eq "xlpi4a" ]; then
+    if [ "${BOARD}" == "lpi4a" ]; then
+        echo "lpi4a specific: Enable rtk-hciattach Service"
         chroot "$CHROOT_TARGET" sh -c "systemctl enable rtk-hciattach"
     fi
 
@@ -270,6 +273,14 @@ calculate_md5()
 
 main()
 {
+    if [[ ! -v BOARD ]]; then
+        echo "env BOARD is not set!"
+    elif [[ -z "$BOARD" ]]; then
+        echo "env BOARD is set to the empty string!"
+    else
+        echo "BOARD is: $BOARD"
+    fi
+
 # 	install_depends
 	make_imagefile
 	pre_mkrootfs
