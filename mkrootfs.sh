@@ -168,8 +168,6 @@ after_mkrootfs()
         echo "lpi4a specific: Add RTL8723DS Service"
         # Add Bluetooth firmware and service
         cp -rp addons/lpi4a-bt/rootfs/usr/local/bin/rtk_hciattach rootfs/usr/local/bin/
-        cp -rp addons/lpi4a-bt/rootfs/lib/firmware/rtlbt/rtl8723d_config rootfs/lib/firmware/rtlbt/
-        cp -rp addons/lpi4a-bt/rootfs/lib/firmware/rtlbt/rtl8723d_fw rootfs/lib/firmware/rtlbt/
         cp -rp addons/etc/systemd/system/rtk-hciattach.service rootfs/etc/systemd/system/
     fi
 
