@@ -1,0 +1,8 @@
+[Unit]
+Description=LPi4A Bluetooth hciattach Service
+
+[Service]
+ExecStart=/bin/sh -c 'if (lsmod | grep -wq "aic8800_fdrv"); then /usr/bin/hciattach -n -s 115200 /dev/ttyS4 any ; else /usr/local/bin/rtk_hciattach -n -s 115200 /dev/ttyS4 rtk_h5 ;fi'
+
+[Install]
+WantedBy=multi-user.target

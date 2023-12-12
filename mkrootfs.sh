@@ -168,7 +168,7 @@ after_mkrootfs()
         echo "lpi4a specific: Add RTL8723DS Service"
         # Add Bluetooth firmware and service
         cp -rp addons/lpi4a-bt/rootfs/usr/local/bin/rtk_hciattach rootfs/usr/local/bin/
-        cp -rp addons/etc/systemd/system/rtk-hciattach.service rootfs/etc/systemd/system/
+        cp -rp addons/etc/systemd/system/auto-hciattach.service rootfs/etc/systemd/system/
     fi
 
     # Add firstboot service
@@ -179,8 +179,8 @@ after_mkrootfs()
     chroot "$CHROOT_TARGET" sh -c "systemctl enable pvrsrvkm"
     chroot "$CHROOT_TARGET" sh -c "systemctl enable firstboot"
     if [ "${BOARD}" == "lpi4a" ]; then
-        echo "lpi4a specific: Enable rtk-hciattach Service"
-        chroot "$CHROOT_TARGET" sh -c "systemctl enable rtk-hciattach"
+        echo "lpi4a specific: Enable auto-hciattach Service"
+        chroot "$CHROOT_TARGET" sh -c "systemctl enable auto-hciattach"
     fi
 
     # Use iptables-legacy for docker
