@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        model: [lpi4a, ahead]
+        model: [lpi4a, ahead, console]
 
     runs-on: ubuntu-22.04
     env:
