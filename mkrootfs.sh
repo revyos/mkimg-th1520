@@ -18,10 +18,11 @@ ROOT_MOUNTPOINT=""
 # == kernel variables ==
 KERNEL_lpi4a="linux-headers-5.10.113-lpi4a linux-image-5.10.113-lpi4a linux-perf-thead"
 KERNEL_ahead="linux-headers-5.10.113-ahead linux-image-5.10.113-ahead linux-perf-thead"
+KERNEL_console="linux-headers-5.10.113-lpi4a linux-image-5.10.113-lpi4a linux-perf-thead"
 KERNEL=$(eval echo '$'"KERNEL_${BOARD}")
 
-BASE_TOOLS="binutils file tree sudo bash-completion u-boot-menu initramfs-tools openssh-server network-manager dnsmasq-base libpam-systemd ppp wireless-regdb wpasupplicant libengine-pkcs11-openssl iptables systemd-timesyncd vim usbutils libgles2 parted exfatprogs systemd-sysv mesa-vulkan-drivers"
-XFCE_DESKTOP="xorg xserver-xorg-video-thead xfce4 desktop-base lightdm xfce4-terminal tango-icon-theme xfce4-notifyd xfce4-power-manager network-manager-gnome xfce4-goodies pulseaudio pulseaudio-module-bluetooth alsa-utils dbus-user-session rtkit pavucontrol thunar-volman eject gvfs gvfs-backends udisks2 dosfstools e2fsprogs libblockdev-crypto2 ntfs-3g polkitd blueman xarchiver"
+BASE_TOOLS="binutils file tree sudo bash-completion u-boot-menu initramfs-tools openssh-server network-manager dnsmasq-base libpam-systemd ppp wireless-regdb wpasupplicant libengine-pkcs11-openssl iptables systemd-timesyncd vim usbutils libgles2 parted exfatprogs systemd-sysv mesa-vulkan-drivers pkexec"
+XFCE_DESKTOP="xorg xserver-xorg-video-thead xinput xfce4 desktop-base lightdm xfce4-terminal tango-icon-theme xfce4-notifyd xfce4-power-manager network-manager-gnome xfce4-goodies pulseaudio pulseaudio-module-bluetooth alsa-utils dbus-user-session rtkit pavucontrol thunar-volman eject gvfs gvfs-backends udisks2 dosfstools e2fsprogs libblockdev-crypto2 ntfs-3g polkitd blueman xarchiver"
 GNOME_DESKTOP="gnome-core avahi-daemon desktop-base file-roller gnome-tweaks gstreamer1.0-libav gstreamer1.0-plugins-ugly libgsf-bin libproxy1-plugin-networkmanager network-manager-gnome"
 KDE_DESKTOP="kde-plasma-desktop"
 BENCHMARK_TOOLS="glmark2-es2 mesa-utils vulkan-tools iperf3 stress-ng"
@@ -112,7 +113,11 @@ make_bootable()
     # Add update-u-boot config
     chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_PROMPT=\"2\"' >> /etc/default/u-boot"
     chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_MENU_LABEL=\"RevyOS GNU/Linux\"' >> /etc/default/u-boot"
-    chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_PARAMETERS=\"console=ttyS0,115200 rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr rootrwoptions=rw,noatime rootrwreset=yes\"' >> /etc/default/u-boot"
+    if [ "${BOARD}" == "console" ]; then
+        chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_PARAMETERS=\"console=ttyS0,115200 rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr rootrwoptions=rw,noatime rootrwreset=yes fbcon=rotate:1\"' >> /etc/default/u-boot"
+    else
+        chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_PARAMETERS=\"console=ttyS0,115200 rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr rootrwoptions=rw,noatime rootrwreset=yes\"' >> /etc/default/u-boot"
+    fi
     chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_FDT_DIR=\"/dtbs/linux-image-\"' >> /etc/default/u-boot"
     chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_ROOT=\"root=/dev/mmcblk0p3\"' >> /etc/default/u-boot"
 
@@ -141,7 +146,7 @@ after_mkrootfs()
     chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,netdev,bluetooth,lp debian"
     chroot "$CHROOT_TARGET" sh -c "echo 'debian:debian' | chpasswd"
 
-    if [ "${BOARD}" == "lpi4a" ]; then
+    if [ "${BOARD}" == "lpi4a" ] || [ "${BOARD}" == "console" ]; then
         echo "lpi4a specific: Add sipeed user"
         chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,netdev,bluetooth,lp sipeed"
         chroot "$CHROOT_TARGET" sh -c "echo 'sipeed:licheepi' | chpasswd"
@@ -170,6 +175,11 @@ after_mkrootfs()
         cp -rp addons/lpi4a-bt/rootfs/usr/local/bin/rtk_hciattach rootfs/usr/local/bin/
         cp -rp addons/etc/systemd/system/auto-hciattach.service rootfs/etc/systemd/system/
     fi
+    if [ "${BOARD}" == "console" ]; then
+        echo "console specific: Add AIC8800 Bluetooth Service"
+        # Add Bluetooth firmware and service
+        cp -rp addons/etc/systemd/system/auto-hciattach.service rootfs/etc/systemd/system/
+    fi
 
     # Add firstboot service
     cp -rp addons/etc/systemd/system/firstboot.service rootfs/etc/systemd/system/
@@ -178,7 +188,7 @@ after_mkrootfs()
     # Install system services
     chroot "$CHROOT_TARGET" sh -c "systemctl enable pvrsrvkm"
     chroot "$CHROOT_TARGET" sh -c "systemctl enable firstboot"
-    if [ "${BOARD}" == "lpi4a" ]; then
+    if [ "${BOARD}" == "lpi4a" ] || [ "${BOARD}" == "console" ]; then
         echo "lpi4a specific: Enable auto-hciattach Service"
         chroot "$CHROOT_TARGET" sh -c "systemctl enable auto-hciattach"
     fi
@@ -221,6 +231,17 @@ EOF
     chroot "$CHROOT_TARGET" sh -c "rm -v /usr/share/images/desktop-base/login-background.svg"
     chroot "$CHROOT_TARGET" sh -c "ln -s /usr/share/images/ruyisdk/ruyi-1-1920x1080.png /usr/share/images/desktop-base/desktop-background"
     chroot "$CHROOT_TARGET" sh -c "ln -s /usr/share/images/ruyisdk/ruyi-2-1920x1080.png /usr/share/images/desktop-base/login-background.svg"
+
+    # Copy files for Console4A
+    if [ "${BOARD}" == "console" ]; then
+        echo "Console4A specific: Copy files for Console4A"
+        cp -rp addons/LicheeConsole4A/* rootfs/opt/
+        # Install autostarts
+        cp -rp addons/LicheeConsole4A/display-setup.desktop rootfs/etc/xdg/autostart/
+
+        # Rotate lightdm screen using /opt/display-setup.sh
+        sed -i 's/#greeter-setup-script=/greeter-setup-script=\/opt\/display-setup.sh/g' "$CHROOT_TARGET"/etc/lightdm/lightdm.conf 
+    fi
 
     # refresh so libs
     chroot "$CHROOT_TARGET" sh -c "rm -v /etc/ld.so.cache"

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Exec=/opt/display-setup.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=DisplaySetup
+Comment=map the touchscreen to the right device and setup display layout
