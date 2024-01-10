@@ -127,44 +127,12 @@ make_bootable()
 
 after_mkrootfs()
 {
-    # Set locale to en_US.UTF-8 UTF-8
-    chroot "$CHROOT_TARGET" sh -c "echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen"
-    chroot "$CHROOT_TARGET" sh -c "locale-gen"
-
-    # Set default timezone to Asia/Shanghai
-    chroot "$CHROOT_TARGET" sh -c "ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime"
-    echo "Asia/Shanghai" > rootfs/etc/timezone
-
-    # Set up fstab
-    chroot "$CHROOT_TARGET" sh -c "echo '/dev/mmcblk0p3 /   auto    defaults    1 1' >> /etc/fstab"
-    chroot "$CHROOT_TARGET" sh -c "echo '/dev/mmcblk0p2 /boot   auto    defaults    0 0' >> /etc/fstab"
-
-    # apt update
-    # chroot "$CHROOT_TARGET" sh -c "apt update"
-    
-    # Add user
-    chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,netdev,bluetooth,lp debian"
-    chroot "$CHROOT_TARGET" sh -c "echo 'debian:debian' | chpasswd"
-
-    if [ "${BOARD}" == "lpi4a" ] || [ "${BOARD}" == "console" ]; then
-        echo "lpi4a specific: Add sipeed user"
-        chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,netdev,bluetooth,lp sipeed"
-        chroot "$CHROOT_TARGET" sh -c "echo 'sipeed:licheepi' | chpasswd"
-    fi
-
-    # Change hostname
-    chroot "$CHROOT_TARGET" sh -c "echo ${BOARD} > /etc/hostname"
-    chroot "$CHROOT_TARGET" sh -c "echo 127.0.1.1 ${BOARD} >> /etc/hosts"
-
     # Add timestamp file in /etc
     if [ ! -f revyos-release ]; then
         echo "$TIMESTAMP" > rootfs/etc/revyos-release
     else
         cp -v revyos-release rootfs/etc/revyos-release
     fi
-
-    # remove openssh keys
-    rm -v rootfs/etc/ssh/ssh_host_*
 
     # copy addons to rootfs
     cp -rp addons/lib/firmware rootfs/lib/
@@ -211,12 +179,14 @@ after_mkrootfs()
     sed -i 's/load-module module-bluetooth-policy/load-module module-bluetooth-policy auto_switch=false/g' "$CHROOT_TARGET"/etc/pulse/default.pa
 
     # Fix cursor offset using software cursor
-    cat << EOF > "$CHROOT_TARGET"/usr/share/X11/xorg.conf.d/10-gc620.conf
+    if [ "${BOARD}" == "lpi4a" ]; then
+        cat << EOF > "$CHROOT_TARGET"/usr/share/X11/xorg.conf.d/10-gc620.conf
 Section "Device"
 	Identifier "dc8200"
 	Driver "thead"
 EndSection
 EOF
+    fi
 
     # Install other packages
     chroot "$CHROOT_TARGET" sh -c "apt install -y mpv parole th1520-vpu libgl4es"
@@ -242,6 +212,38 @@ EOF
         # Rotate lightdm screen using /opt/display-setup.sh
         sed -i 's/#greeter-setup-script=/greeter-setup-script=\/opt\/display-setup.sh/g' "$CHROOT_TARGET"/etc/lightdm/lightdm.conf 
     fi
+
+    # Set locale to en_US.UTF-8 UTF-8
+    chroot "$CHROOT_TARGET" sh -c "echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen"
+    chroot "$CHROOT_TARGET" sh -c "locale-gen"
+
+    # Set default timezone to Asia/Shanghai
+    chroot "$CHROOT_TARGET" sh -c "ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime"
+    echo "Asia/Shanghai" > rootfs/etc/timezone
+
+    # Set up fstab
+    chroot "$CHROOT_TARGET" sh -c "echo '/dev/mmcblk0p3 /   auto    defaults    1 1' >> /etc/fstab"
+    chroot "$CHROOT_TARGET" sh -c "echo '/dev/mmcblk0p2 /boot   auto    defaults    0 0' >> /etc/fstab"
+
+    # apt update
+    # chroot "$CHROOT_TARGET" sh -c "apt update"
+    
+    # Add user
+    chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,netdev,bluetooth,lp debian"
+    chroot "$CHROOT_TARGET" sh -c "echo 'debian:debian' | chpasswd"
+
+    if [ "${BOARD}" == "lpi4a" ] || [ "${BOARD}" == "console" ]; then
+        echo "lpi4a specific: Add sipeed user"
+        chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,netdev,bluetooth,lp sipeed"
+        chroot "$CHROOT_TARGET" sh -c "echo 'sipeed:licheepi' | chpasswd"
+    fi
+
+    # Change hostname
+    chroot "$CHROOT_TARGET" sh -c "echo ${BOARD} > /etc/hostname"
+    chroot "$CHROOT_TARGET" sh -c "echo 127.0.1.1 ${BOARD} >> /etc/hosts"
+
+    # remove openssh keys
+    rm -v rootfs/etc/ssh/ssh_host_*
 
     # refresh so libs
     chroot "$CHROOT_TARGET" sh -c "rm -v /etc/ld.so.cache"
