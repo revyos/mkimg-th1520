@@ -214,8 +214,10 @@ EOF
     fi
 
     # Set locale to en_US.UTF-8 UTF-8
-    chroot "$CHROOT_TARGET" sh -c "echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen"
-    chroot "$CHROOT_TARGET" sh -c "locale-gen"
+    chroot "$CHROOT_TARGET" sh -c "echo 'locales locales/default_environment_locale select en_US.UTF-8' | debconf-set-selections"
+    chroot "$CHROOT_TARGET" sh -c "echo 'locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8' | debconf-set-selections"
+    chroot "$CHROOT_TARGET" sh -c "rm /etc/locale.gen"
+    chroot "$CHROOT_TARGET" sh -c "dpkg-reconfigure --frontend noninteractive locales"
 
     # Set default timezone to Asia/Shanghai
     chroot "$CHROOT_TARGET" sh -c "ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime"
