@@ -2,8 +2,6 @@
 set -e
 
 BOARD=${BOARD:-lpi4a} # lpi4a, ahead
-IMAGE_SIZE=4500M
-IMAGE_FILE=""
 BOOT_SIZE=500M
 BOOT_IMG=""
 ROOT_SIZE=4G
