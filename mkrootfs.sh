@@ -178,8 +178,8 @@ after_mkrootfs()
     # Fix cann't connect bluetooth headphone
     sed -i 's/load-module module-bluetooth-policy/load-module module-bluetooth-policy auto_switch=false/g' "$CHROOT_TARGET"/etc/pulse/default.pa
 
-    # Fix cursor offset using software cursor
-    if [ "${BOARD}" == "lpi4a" ]; then
+    # Using on chip 2D accelerator for quicker window & menu drawing
+    if [ "${BOARD}" == "lpi4a" ] || [ "${BOARD}" == "ahead" ]; then
         cat << EOF > "$CHROOT_TARGET"/usr/share/X11/xorg.conf.d/10-gc620.conf
 Section "Device"
 	Identifier "dc8200"
