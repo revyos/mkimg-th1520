@@ -2,8 +2,6 @@
 set -e
 
 BOARD=${BOARD:-lpi4a} # lpi4a, ahead
-IMAGE_SIZE=4500M
-IMAGE_FILE=""
 BOOT_SIZE=500M
 BOOT_IMG=""
 ROOT_SIZE=4G
@@ -19,6 +17,7 @@ ROOT_MOUNTPOINT=""
 KERNEL_lpi4a="linux-headers-5.10.113-lpi4a linux-image-5.10.113-lpi4a linux-perf-thead"
 KERNEL_ahead="linux-headers-5.10.113-ahead linux-image-5.10.113-ahead linux-perf-thead"
 KERNEL_console="linux-headers-5.10.113-lpi4a linux-image-5.10.113-lpi4a linux-perf-thead"
+KERNEL_lpi4amain="linux-headers-6.7.0-lpi4a linux-image-6.7.0-lpi4a th1520-mainline-opensbi"
 KERNEL=$(eval echo '$'"KERNEL_${BOARD}")
 
 BASE_TOOLS="binutils file tree sudo bash-completion u-boot-menu initramfs-tools openssh-server network-manager dnsmasq-base libpam-systemd ppp wireless-regdb wpasupplicant libengine-pkcs11-openssl iptables systemd-timesyncd vim usbutils libgles2 parted exfatprogs systemd-sysv mesa-vulkan-drivers pkexec"
@@ -97,6 +96,9 @@ make_rootfs()
     mount -B /run "$CHROOT_TARGET"/run
     mount -B /dev "$CHROOT_TARGET"/dev
     mount -B /dev/pts "$CHROOT_TARGET"/dev/pts
+    mount -t tmpfs tmpfs "$CHROOT_TARGET"/tmp
+    mount -t tmpfs tmpfs "$CHROOT_TARGET"/var/tmp
+    mount -t tmpfs tmpfs "$CHROOT_TARGET"/var/cache/apt/archives/
 
     # move boot contents back to /boot
     mv -v "$CHROOT_TARGET"/mnt/* "$CHROOT_TARGET"/boot/
@@ -108,7 +110,7 @@ make_rootfs()
 make_bootable()
 {
     # Install kernel
-    chroot "$CHROOT_TARGET" sh -c "apt install $KERNEL"
+    chroot "$CHROOT_TARGET" sh -c "apt install -y $KERNEL"
 
     # Add update-u-boot config
     chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_PROMPT=\"2\"' >> /etc/default/u-boot"
@@ -188,8 +190,13 @@ EndSection
 EOF
     fi
 
-    # Install other packages
-    chroot "$CHROOT_TARGET" sh -c "apt install -y mpv parole th1520-vpu libgl4es"
+    if [ "${BOARD}" == "lpi4amain" ]; then
+        # No space left on device
+        echo "skip install mpv parole th1520-vpu libgl4es"
+    else
+        # Install other packages
+        chroot "$CHROOT_TARGET" sh -c "apt install -y mpv parole th1520-vpu libgl4es"
+    fi
 
     # Setup branding related
     chroot "$CHROOT_TARGET" sh -c "apt install -y $BRANDING "
@@ -246,6 +253,14 @@ EOF
 
     # remove openssh keys
     rm -v rootfs/etc/ssh/ssh_host_*
+
+    if [ "${BOARD}" == "lpi4amain" ]; then
+        echo "lpi4amain No GPU: Disable lightdm"
+	# lpi4a-main No GPU
+        chroot "$CHROOT_TARGET" sh -c "systemctl disable lightdm"
+        # Install perf-th1520 (new perf for c9xx pmu)
+        cp -rp addons/lpi4amain/perf-th1520 rootfs/bin
+    fi
 
     # refresh so libs
     chroot "$CHROOT_TARGET" sh -c "rm -v /etc/ld.so.cache"
