@@ -17,7 +17,7 @@ ROOT_MOUNTPOINT=""
 KERNEL_lpi4a="linux-headers-5.10.113-lpi4a linux-image-5.10.113-lpi4a linux-perf-thead"
 KERNEL_ahead="linux-headers-5.10.113-ahead linux-image-5.10.113-ahead linux-perf-thead"
 KERNEL_console="linux-headers-5.10.113-lpi4a linux-image-5.10.113-lpi4a linux-perf-thead"
-KERNEL_lpi4amain="linux-headers-6.7.0-lpi4a linux-image-6.7.0-lpi4a th1520-mainline-opensbi"
+KERNEL_lpi4amain="linux-headers-6.7.1-lpi4a linux-image-6.7.1-lpi4a th1520-mainline-opensbi"
 KERNEL=$(eval echo '$'"KERNEL_${BOARD}")
 
 BASE_TOOLS="binutils file tree sudo bash-completion u-boot-menu initramfs-tools openssh-server network-manager dnsmasq-base libpam-systemd ppp wireless-regdb wpasupplicant libengine-pkcs11-openssl iptables systemd-timesyncd vim usbutils libgles2 parted exfatprogs systemd-sysv mesa-vulkan-drivers pkexec"
