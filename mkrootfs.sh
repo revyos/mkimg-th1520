@@ -148,6 +148,7 @@ after_mkrootfs()
     if [ "${BOARD}" == "console" ]; then
         echo "console specific: Add AIC8800 Bluetooth Service"
         # Add Bluetooth firmware and service
+        cp -rp addons/lpi4a-bt/rootfs/usr/local/bin/rtk_hciattach rootfs/usr/local/bin/
         cp -rp addons/etc/systemd/system/auto-hciattach.service rootfs/etc/systemd/system/
     fi
 
