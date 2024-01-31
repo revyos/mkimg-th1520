@@ -20,7 +20,7 @@ KERNEL_console="linux-headers-5.10.113-lpi4a linux-image-5.10.113-lpi4a linux-pe
 KERNEL_lpi4amain="linux-headers-6.7.1-lpi4a linux-image-6.7.1-lpi4a th1520-mainline-opensbi"
 KERNEL=$(eval echo '$'"KERNEL_${BOARD}")
 
-BASE_TOOLS="binutils file tree sudo bash-completion u-boot-menu initramfs-tools openssh-server network-manager dnsmasq-base libpam-systemd ppp wireless-regdb wpasupplicant libengine-pkcs11-openssl iptables systemd-timesyncd vim usbutils libgles2 parted exfatprogs systemd-sysv mesa-vulkan-drivers pkexec"
+BASE_TOOLS="binutils file tree sudo bash-completion u-boot-menu initramfs-tools openssh-server network-manager dnsmasq-base libpam-systemd ppp wireless-regdb wpasupplicant libengine-pkcs11-openssl iptables systemd-timesyncd vim usbutils libgles2 parted exfatprogs systemd-sysv mesa-vulkan-drivers pkexec arch-install-scripts"
 XFCE_DESKTOP="xorg xserver-xorg-video-thead xinput xfce4 desktop-base lightdm xfce4-terminal tango-icon-theme xfce4-notifyd xfce4-power-manager network-manager-gnome xfce4-goodies pulseaudio pulseaudio-module-bluetooth alsa-utils dbus-user-session rtkit pavucontrol thunar-volman eject gvfs gvfs-backends udisks2 dosfstools e2fsprogs libblockdev-crypto2 ntfs-3g polkitd blueman xarchiver"
 GNOME_DESKTOP="gnome-core avahi-daemon desktop-base file-roller gnome-tweaks gstreamer1.0-libav gstreamer1.0-plugins-ugly libgsf-bin libproxy1-plugin-networkmanager network-manager-gnome"
 KDE_DESKTOP="kde-plasma-desktop"
@@ -121,7 +121,7 @@ make_bootable()
         chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_PARAMETERS=\"console=ttyS0,115200 rootwait rw earlycon clk_ignore_unused loglevel=7 eth=$ethaddr rootrwoptions=rw,noatime rootrwreset=yes\"' >> /etc/default/u-boot"
     fi
     chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_FDT_DIR=\"/dtbs/linux-image-\"' >> /etc/default/u-boot"
-    chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_ROOT=\"root=/dev/mmcblk0p3\"' >> /etc/default/u-boot"
+    chroot "$CHROOT_TARGET" sh -c "echo 'U_BOOT_ROOT=\"root=PARTUUID=80a5a8e9-c744-491a-93c1-4f4194fd690a\"' >> /etc/default/u-boot"
 
     # Update extlinux config
     chroot "$CHROOT_TARGET" sh -c "u-boot-update"
