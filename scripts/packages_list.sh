@@ -41,4 +41,4 @@ libreoffice-sdbc-postgresql \
 libreoffice-wiki-publisher \
 "
 DOCKER="docker.io apparmor ca-certificates cgroupfs-mount git needrestart xz-utils"
-BRANDING="dynamic-motd"
+BRANDING="lsb-release figlet dynamic-motd"
