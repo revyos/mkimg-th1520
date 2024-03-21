@@ -79,16 +79,19 @@ EOF
         chroot "$CHROOT_TARGET" sh -c "apt install -y $BRANDING "
         rm -vr "$CHROOT_TARGET"/etc/update-motd.d
         cp -rp addons/etc/update-motd.d "$CHROOT_TARGET"/etc/
+    elif [ "${BOARD}" == "${BOARD_LPI4A_MAINLINE}" ]; then
+        # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1029394
+        chroot "$CHROOT_TARGET" sh -c "apt install -y lsb-release figlet "
+        rm -vr "$CHROOT_TARGET"/etc/update-motd.d
+        cp -rp addons/etc/update-motd.d "$CHROOT_TARGET"/etc/
+    fi
+    if [ "${BOARD}" != "${BOARD_LPI4A_MAINLINE}" ]; then
         # Wallpaper
         cp -rp addons/usr/share/images/ruyisdk "$CHROOT_TARGET"/usr/share/images/
         chroot "$CHROOT_TARGET" sh -c "rm -v /usr/share/images/desktop-base/desktop-background"
         chroot "$CHROOT_TARGET" sh -c "rm -v /usr/share/images/desktop-base/login-background.svg"
         chroot "$CHROOT_TARGET" sh -c "ln -s /usr/share/images/ruyisdk/ruyi-1-1920x1080.png /usr/share/images/desktop-base/desktop-background"
         chroot "$CHROOT_TARGET" sh -c "ln -s /usr/share/images/ruyisdk/ruyi-2-1920x1080.png /usr/share/images/desktop-base/login-background.svg"
-    elif [ "${BOARD}" == "${BOARD_LPI4A_MAINLINE}" ]; then
-        # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1029394
-        rm -vr "$CHROOT_TARGET"/etc/update-motd.d
-        cp -rp addons/etc/update-motd.d "$CHROOT_TARGET"/etc/
     fi
 
     # lpi4amain related (disable GPU, add perf)

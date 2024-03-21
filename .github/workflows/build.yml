@@ -75,6 +75,7 @@ jobs:
               pushd mkimg-th1520
                 echo "BUILD_ID=${{ env.BUILD_ID }}" >> revyos-release
                 echo "BUILD_DATE=${{ env.BUILD_DATE }}" >> revyos-release
+                echo "BOARD_NAME=${{ env.BOARD }}" >> revyos-release
                 echo "RELEASE_ID=${{ github.ref_name }}" >> revyos-release
                 echo "COMMIT_ID=${{ github.sha }}" >> revyos-release
                 echo "RUNNER_ID=${{ github.run_id }}" >> revyos-release
