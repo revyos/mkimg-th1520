@@ -15,7 +15,13 @@ make_rootfs_tarball()
 
 make_rootfs()
 {
-    make_rootfs_tarball $CHROOT_TARGET
+    if [[ -z "$USE_TARBALL" ]]; then
+        echo "env USE_TARBALL is set to the empty string!"
+        echo "create rootfs"
+        make_rootfs_tarball $CHROOT_TARGET
+    else
+        tar xpvf $USE_TARBALL --xattrs-include='*.*' --numeric-owner -C $CHROOT_TARGET
+    fi
 
     # move /boot contents to other place
     if [ ! -z "$(ls -A "$CHROOT_TARGET"/boot/)" ]; then
