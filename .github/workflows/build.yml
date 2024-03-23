@@ -111,7 +111,7 @@ jobs:
               sudo apt install -y gdisk dosfstools build-essential autoconf automake autotools-dev ninja-build make \
                                   libncurses-dev gawk flex bison openssl libssl-dev tree \
                                   gcc-riscv64-linux-gnu gfortran-riscv64-linux-gnu libgomp1-riscv64-cross \
-                                  qemu-user-static binfmt-support mmdebstrap 
+                                  qemu-user-static binfmt-support mmdebstrap libconfuse-dev mtools
               wget https://mirror.iscas.ac.cn/revyos/revyos-addons/pool/main/r/revyos-keyring/revyos-keyring_2023.06.12_all.deb
               sudo apt install ./revyos-keyring_2023.06.12_all.deb
 
@@ -128,6 +128,22 @@ jobs:
               ls -al /usr/bin/qemu-riscv64-static
               sudo dpkg-reconfigure binfmt-support
               echo "USE_TARBALL=${ARTIFACTS_DIR}/common_revyos_rootfs/common_revyos_rootfs.tar" >> $GITHUB_ENV
+
+      - name: Checkout genimage
+        uses: actions/checkout@v4
+        with:
+          repository: pengutronix/genimage
+          path: genimage
+          ref: v17
+          
+      - name: build genimage
+        run: |
+            pushd genimage
+              ./autogen.sh
+              ./configure
+              make -j$(nproc)
+              sudo make install
+            popd
 
       - name: Checkout Repo
         uses: actions/checkout@v4
