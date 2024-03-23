@@ -13,22 +13,9 @@ env:
   ARCH: riscv
 
 jobs:
-  mkrootfs:
-    strategy:
-      fail-fast: false
-      matrix:
-        model: [lpi4a, ahead, console, lpi4amain, meles]
-
+  prepare:
     runs-on: ubuntu-22.04
-    env:
-      BOARD: ${{ matrix.model }}
-
     steps:
-      - name: Create Timestamp
-        run: |
-              echo "BUILD_ID=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_ENV
-              echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
-
       - name: Install Software
         run: |
               sudo apt update && \
@@ -40,7 +27,7 @@ jobs:
               sudo apt install ./revyos-keyring_2023.06.12_all.deb
 
       - name: Checkout qemu
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: revyos/qemu
           path: qemu
@@ -64,8 +51,66 @@ jobs:
             ls -al /usr/bin/qemu-riscv64-static
             sudo dpkg-reconfigure binfmt-support
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: qemu-riscv64-static-ci
+          path: /usr/bin/qemu-riscv64-static
+
+  mkrootfs:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [lpi4a, ahead, console, lpi4amain, meles]
+
+    runs-on: ubuntu-22.04
+    env:
+      BOARD: ${{ matrix.model }}
+    steps:
+      - name:  Run Configuration Commands
+        run: |
+          DATESTAMP="$(date --utc '+%Y.%m.%d')"
+          echo "Version: ${DATESTAMP}"
+
+          # Setup Artifacts Directory
+          ARTIFACTS_DIR="/opt/artifacts/"
+          mkdir -p $ARTIFACTS_DIR
+
+          # Setup environment variables
+          echo "DATESTAMP=${DATESTAMP}" >> $GITHUB_ENV
+          echo "ARTIFACTS_DIR=${ARTIFACTS_DIR}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Create Timestamp
+        run: |
+              echo "BUILD_ID=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_ENV
+              echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+
+      - name: Install Software
+        run: |
+              sudo apt update && \
+              sudo apt install -y gdisk dosfstools build-essential autoconf automake autotools-dev ninja-build make \
+                                  libncurses-dev gawk flex bison openssl libssl-dev tree \
+                                  gcc-riscv64-linux-gnu gfortran-riscv64-linux-gnu libgomp1-riscv64-cross \
+                                  qemu-user-static binfmt-support mmdebstrap 
+              wget https://mirror.iscas.ac.cn/revyos/revyos-addons/pool/main/r/revyos-keyring/revyos-keyring_2023.06.12_all.deb
+              sudo apt install ./revyos-keyring_2023.06.12_all.deb
+
+      - name: Download Built Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: ${{ env.ARTIFACTS_DIR }}
+
+      - name: Configure QEMU
+        run: |
+              tree ${ARTIFACTS_DIR}/
+              sudo cp -vf ${ARTIFACTS_DIR}/qemu-riscv64-static-ci/qemu-riscv64-static /usr/bin/qemu-riscv64-static
+              sudo chmod a+x /usr/bin/qemu-riscv64-static
+              ls -al /usr/bin/qemu-riscv64-static
+              sudo dpkg-reconfigure binfmt-support
+
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
             path: 'mkimg-th1520'  # TODO: make this name a global variable
 
