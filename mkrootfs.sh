@@ -2,6 +2,7 @@
 set -e
 
 # BOARD=${BOARD:-lpi4a} # lpi4a, ahead
+# Partition size is written in MB !!
 BOOT_SIZE=500M
 BOOT_IMG=""
 ROOT_SIZE=4G
@@ -17,33 +18,11 @@ TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
 source $(pwd)/scripts/boards_list.sh
 source $(pwd)/scripts/packages_list.sh
+source $(pwd)/scripts/make_imagefile.sh
+source $(pwd)/scripts/pre_mkrootfs.sh
 source $(pwd)/scripts/make_rootfs.sh
 source $(pwd)/scripts/make_bootable.sh
 source $(pwd)/scripts/after_mkrootfs.sh
-
-make_imagefile()
-{
-    if [ -f revyos-release ]; then
-        echo "Found revyos-release, using timestamp in this file."
-        . ./revyos-release
-        TIMESTAMP=${BUILD_ID}
-    fi
-    BOOT_IMG="boot-$BOARD-$TIMESTAMP.ext4"
-    truncate -s "$BOOT_SIZE" "$BOOT_IMG"
-    ROOT_IMG="root-$BOARD-$TIMESTAMP.ext4"
-    truncate -s "$ROOT_SIZE" "$ROOT_IMG"
-
-    # Format partitions
-    mkfs.ext4 -F "$BOOT_IMG"
-    mkfs.ext4 -F "$ROOT_IMG"
-}
-
-pre_mkrootfs()
-{
-    # Mount loop device
-    mkdir "$CHROOT_TARGET"
-    mount "$ROOT_IMG" "$CHROOT_TARGET"
-}
 
 unmount_image()
 {
