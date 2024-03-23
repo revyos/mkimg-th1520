@@ -86,6 +86,11 @@ calculate_md5()
 
 main()
 {
+	if [ "$1" = "rootfs" ]; then
+		make_rootfs_tarball $2
+		exit 0
+	fi
+	
     check_board_vaild
 # 	install_depends
 	make_imagefile
