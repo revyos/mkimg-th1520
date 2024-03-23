@@ -1,20 +1,21 @@
 #!/bin/bash
 
+make_rootfs_tarball()
+{
+    # use $1
+    PACKAGE_LIST="$KEYRINGS $GPU_DRIVER $BASE_TOOLS $GRAPHIC_TOOLS $XFCE_DESKTOP $BENCHMARK_TOOLS $FONTS $INCLUDE_APPS $EXTRA_TOOLS $LIBREOFFICE"
+    mmdebstrap --architectures=riscv64 \
+        --include="$PACKAGE_LIST" \
+        sid $1 \
+        "deb https://mirror.iscas.ac.cn/revyos/revyos-gles-21/ revyos-gles-21 main" \
+        "deb https://mirror.iscas.ac.cn/revyos/revyos-base/ sid main contrib non-free non-free-firmware" \
+        "deb https://mirror.iscas.ac.cn/revyos/revyos-kernels/ revyos-kernels main" \
+        "deb https://mirror.iscas.ac.cn/revyos/revyos-addons/ revyos-addons main"
+}
+
 make_rootfs()
 {
-    if [ "${BOARD}" == "${BOARD_LPI4A_MAINLINE}" ]; then
-        PACKAGE_LIST="$KEYRINGS $GPU_DRIVER $BASE_TOOLS $EXTRA_TOOLS"
-    else
-        PACKAGE_LIST="$KEYRINGS $GPU_DRIVER $BASE_TOOLS $GRAPHIC_TOOLS $XFCE_DESKTOP $BENCHMARK_TOOLS $FONTS $INCLUDE_APPS $EXTRA_TOOLS $LIBREOFFICE"
-    fi
-
-    mmdebstrap --architectures=riscv64 \
-    --include="$PACKAGE_LIST" \
-    sid "$CHROOT_TARGET" \
-    "deb https://mirror.iscas.ac.cn/revyos/revyos-gles-21/ revyos-gles-21 main" \
-    "deb https://mirror.iscas.ac.cn/revyos/revyos-base/ sid main contrib non-free non-free-firmware" \
-    "deb https://mirror.iscas.ac.cn/revyos/revyos-kernels/ revyos-kernels main" \
-    "deb https://mirror.iscas.ac.cn/revyos/revyos-addons/ revyos-addons main"
+    make_rootfs_tarball $CHROOT_TARGET
 
     # move /boot contents to other place
     if [ ! -z "$(ls -A "$CHROOT_TARGET"/boot/)" ]; then
