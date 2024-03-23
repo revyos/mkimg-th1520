@@ -20,6 +20,7 @@ source $(pwd)/scripts/packages_list.sh
 source $(pwd)/scripts/make_rootfs.sh
 source $(pwd)/scripts/make_bootable.sh
 source $(pwd)/scripts/after_mkrootfs.sh
+source $(pwd)/scripts/create_sdcard.sh
 
 make_imagefile()
 {
@@ -99,6 +100,7 @@ main()
 # 	make_kernel
 	make_bootable
 	after_mkrootfs
+	create_sdcard
 	exit
 }
 
