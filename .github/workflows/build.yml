@@ -15,6 +15,8 @@ env:
 jobs:
   prepare:
     runs-on: ubuntu-22.04
+    env:
+      CREATE_TARBALL: common_revyos_rootfs.tar
     steps:
       - name: Install Software
         run: |
@@ -55,6 +57,23 @@ jobs:
         with:
           name: qemu-riscv64-static-ci
           path: /usr/bin/qemu-riscv64-static
+
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          path: 'mkimg-th1520'  # TODO: make this name a global variable
+
+      - name: Make rootfs tarball
+        run: |
+              pushd mkimg-th1520
+                sudo -E ./mkrootfs.sh
+                mv ${CREATE_TARBALL} ../
+              popd
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: common_revyos_rootfs
+          path: ${{ env.CREATE_TARBALL }}
 
   mkrootfs:
     needs: prepare
@@ -108,6 +127,7 @@ jobs:
               sudo chmod a+x /usr/bin/qemu-riscv64-static
               ls -al /usr/bin/qemu-riscv64-static
               sudo dpkg-reconfigure binfmt-support
+              echo "USE_TARBALL=${ARTIFACTS_DIR}/common_revyos_rootfs/common_revyos_rootfs.tar" >> $GITHUB_ENV
 
       - name: Checkout Repo
         uses: actions/checkout@v4

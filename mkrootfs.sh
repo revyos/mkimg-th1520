@@ -86,8 +86,8 @@ calculate_md5()
 
 main()
 {
-	if [ "$1" = "rootfs" ]; then
-		make_rootfs_tarball $2
+	if [ ! -z "${CREATE_TARBALL}" ]; then
+		make_rootfs_tarball ${CREATE_TARBALL}
 		exit 0
 	fi
 	
