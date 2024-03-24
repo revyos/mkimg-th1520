@@ -3,6 +3,7 @@
 create_sdcard()
 {
     SD_TARGET=sdcard.cfg
+    SD_NAME=sdcard-$BOARD-$TIMESTAMP.img
 
     cp -vf sdcard_template.cfg ${SD_TARGET}
 
@@ -14,4 +15,20 @@ create_sdcard()
         --inputpath $(pwd) \
         --outputpath $(pwd) \
         --rootpath="$(mktemp -d)"
+
+    losetup -P "${LOOP_DEVICE}" ${SD_NAME}
+
+    mount "${LOOP_DEVICE}"p4 $CHROOT_TARGET
+    mount "${LOOP_DEVICE}"p2 $CHROOT_TARGET/boot
+    # Update fstab
+    sed -i "s/mmcblk0/mmcblk1/g" $CHROOT_TARGET/etc/fstab
+    # Update firstboot
+    sed -i "s/mmcblk0/mmcblk1/g" $CHROOT_TARGET/opt/firstboot.sh
+    # Update uboot
+    sed -i "s/${EMMC_ROOT_UUID}/${SDCARD_ROOT_UUID}/g" $CHROOT_TARGET/etc/default/u-boot
+    sed -i "s/${EMMC_ROOT_UUID}/${SDCARD_ROOT_UUID}/g" $CHROOT_TARGET/boot/extlinux/extlinux.conf
+
+    # clean sdcard
+    umount -l $CHROOT_TARGET
+    losetup -d "${LOOP_DEVICE}"
 }
