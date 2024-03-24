@@ -43,7 +43,7 @@ after_mkrootfs()
 
     # Chromium add "--no-sandbox --use-gl=egl" flags
     # replace "Exec=/usr/bin/chromium %U" to "Exec=/usr/bin/chromium --no-sandbox --use-gl=egl %U"
-    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ]; then
+    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_AHEAD}" ] || [ "${BOARD}" == "${BOARD_MELES}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ]; then
         sed -i "s/Exec=\/usr\/bin\/chromium/Exec=\/usr\/bin\/chromium --no-sandbox --use-gl=egl/gi" "$CHROOT_TARGET"/usr/share/applications/chromium.desktop
 
         # Temp add HDMI audio output on Volume control
@@ -57,7 +57,7 @@ after_mkrootfs()
     fi
 
     # Using on chip 2D accelerator for quicker window & menu drawing
-    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_AHEAD}" ]; then
+    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_AHEAD}" ] || [ "${BOARD}" == "${BOARD_MELES}" ]; then
         cat << EOF > "$CHROOT_TARGET"/usr/share/X11/xorg.conf.d/10-gc620.conf
 Section "Device"
 	Identifier "dc8200"
