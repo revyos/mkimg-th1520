@@ -124,11 +124,15 @@ EOF
 
     # Set default timezone to Asia/Shanghai
     chroot "$CHROOT_TARGET" sh -c "ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime"
-    echo "Asia/Shanghai" > rootfs/etc/timezone
+    echo "Asia/Shanghai" > $CHROOT_TARGET/etc/timezone
 
     # Set up fstab
-    chroot "$CHROOT_TARGET" sh -c "echo '/dev/mmcblk0p4 /   auto    defaults    1 1' >> /etc/fstab"
-    chroot "$CHROOT_TARGET" sh -c "echo '/dev/mmcblk0p2 /boot   auto    defaults    0 0' >> /etc/fstab"
+    chroot $CHROOT_TARGET /bin/bash << EOF
+echo '/dev/mmcblk0p4 /   auto    defaults    1 1' >> /etc/fstab
+echo '/dev/mmcblk0p2 /boot   auto    defaults    0 0' >> /etc/fstab
+
+exit
+EOF
 
     # apt update
     # chroot "$CHROOT_TARGET" sh -c "apt update"
@@ -144,8 +148,12 @@ EOF
     fi
 
     # Change hostname
-    chroot "$CHROOT_TARGET" sh -c "echo ${BOARD} > /etc/hostname"
-    chroot "$CHROOT_TARGET" sh -c "echo 127.0.1.1 ${BOARD} >> /etc/hosts"
+    chroot $CHROOT_TARGET /bin/bash << EOF
+echo revyos-${BOARD} > /etc/hostname
+echo 127.0.1.1 revyos-${BOARD} >> /etc/hosts
+
+exit
+EOF
 
     # remove openssh keys
     rm -v rootfs/etc/ssh/ssh_host_*

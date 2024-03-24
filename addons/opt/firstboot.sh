@@ -15,6 +15,9 @@ resize2fs /dev/mmcblk0p4
 mkswap /dev/mmcblk0p3
 swapon -a
 
+# mount non-rootfs
+mount /dev/mmcblk0p2 /boot
+
 # regenerate fstab
 genfstab -t PARTUUID / > /etc/fstab
 update-initramfs -u
