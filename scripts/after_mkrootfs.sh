@@ -150,7 +150,6 @@ EOF
     # Change hostname
     chroot $CHROOT_TARGET /bin/bash << EOF
 echo revyos-${BOARD} > /etc/hostname
-echo 127.0.1.1 revyos-${BOARD} >> /etc/hosts
 
 exit
 EOF

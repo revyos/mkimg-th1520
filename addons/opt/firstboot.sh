@@ -28,6 +28,9 @@ update-initramfs -u
 # regenerate openssh host keys
 dpkg-reconfigure openssh-server
 
+# set hosts
+echo "127.0.1.1 $(hostname)" >> /etc/hosts
+
 # whiptail --infobox "Firstboot Done. Rebooting in 3 seconds..." 20 60
 # sleep 3
 # reboot
