@@ -172,13 +172,23 @@ jobs:
               sha512sum *.zst > SHA512SUMS
             popd
 
-      - name: 'Upload Artifact'
+      - name: 'Upload Artifact EMMC'
         uses: actions/upload-artifact@v3
         with:
           retention-days: 30
           name: th1520-${{ env.BOARD }}-${{ env.BUILD_ID }}
           path: |
-                  mkimg-th1520/*.zst
+                  mkimg-th1520/*.ext4.zst
+                  mkimg-th1520/SHA256SUMS
+                  mkimg-th1520/SHA512SUMS
+      
+      - name: 'Upload Artifact SDCARD'
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 30
+          name: th1520-sdcard-${{ env.BOARD }}-${{ env.BUILD_ID }}
+          path: |
+                  mkimg-th1520/*.img.zst
                   mkimg-th1520/SHA256SUMS
                   mkimg-th1520/SHA512SUMS
 
