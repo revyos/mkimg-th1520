@@ -127,7 +127,7 @@ EOF
     echo "Asia/Shanghai" > rootfs/etc/timezone
 
     # Set up fstab
-    chroot "$CHROOT_TARGET" sh -c "echo '/dev/mmcblk0p3 /   auto    defaults    1 1' >> /etc/fstab"
+    chroot "$CHROOT_TARGET" sh -c "echo '/dev/mmcblk0p4 /   auto    defaults    1 1' >> /etc/fstab"
     chroot "$CHROOT_TARGET" sh -c "echo '/dev/mmcblk0p2 /boot   auto    defaults    0 0' >> /etc/fstab"
 
     # apt update
