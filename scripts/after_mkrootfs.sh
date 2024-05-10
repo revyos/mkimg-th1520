@@ -68,10 +68,10 @@ EOF
 
     if [ "${BOARD}" == "${BOARD_LPI4A_MAINLINE}" ]; then
         # No space left on device
-        echo "skip install mpv parole th1520-vpu libgl4es"
+        echo "skip install mpv parole th1520-vpu libgl4es th1520-npu"
     else
         # Install other packages
-        chroot "$CHROOT_TARGET" sh -c "apt install -y mpv parole th1520-vpu libgl4es"
+        chroot "$CHROOT_TARGET" sh -c "apt install -y mpv parole th1520-vpu libgl4es th1520-npu"
     fi
 
     # Setup branding related
