@@ -53,7 +53,7 @@ jobs:
             ls -al /usr/bin/qemu-riscv64-static
             sudo dpkg-reconfigure binfmt-support
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: qemu-riscv64-static-ci
           path: /usr/bin/qemu-riscv64-static
@@ -70,7 +70,7 @@ jobs:
                 mv ${CREATE_TARBALL} ../
               popd
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: common_revyos_rootfs
           path: ${{ env.CREATE_TARBALL }}
@@ -85,6 +85,8 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       BOARD: ${{ matrix.model }}
+    outputs:
+      BUILD_ID: ${{ steps.output-env.outputs.BUILD_ID }}
     steps:
       - name:  Run Configuration Commands
         run: |
@@ -116,7 +118,7 @@ jobs:
               sudo apt install ./revyos-keyring_2023.06.12_all.deb
 
       - name: Download Built Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           path: ${{ env.ARTIFACTS_DIR }}
 
@@ -173,7 +175,7 @@ jobs:
             popd
 
       - name: 'Upload Artifact EMMC'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           retention-days: 30
           name: th1520-${{ env.BOARD }}-${{ env.BUILD_ID }}
@@ -183,7 +185,7 @@ jobs:
                   mkimg-th1520/SHA512SUMS
       
       - name: 'Upload Artifact SDCARD'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           retention-days: 30
           name: th1520-sdcard-${{ env.BOARD }}-${{ env.BUILD_ID }}
@@ -199,6 +201,43 @@ jobs:
           files: |
                   mkimg-th1520/*.zst
           token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 'Output env'
+        id: output-env
+        run: |
+          echo "BUILD_ID=$BUILD_ID" >> $GITHUB_OUTPUT
+
+  test:
+    runs-on: ubuntu-22.04
+    needs: [
+      mkrootfs
+    ]
+    if: ${{ always() && !cancelled() && needs.mkrootfs.result == 'success' }}
+    env:
+      BUILD_ID: ${{ needs.mkrootfs.outputs.BUILD_ID }}
+    steps:
+      - name: Install Software
+        run: |
+          sudo apt update && \
+          sudo apt install -y fastboot minicom
+      - name: Download Built Artifacts
+        uses: actions/download-artifact@v4
+
+      - name: 'Download uboot artifact'
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: 'revyos/thead-u-boot'
+          version: 'tags/20240328'
+          file: 'u-boot-with-spl-lpi4a.bin'
+
+      - name: 'List all downloaded files'
+        run: ls -R $GITHUB_WORKSPACE
+
+      - name: 'Decompress images'
+        run: |
+          cd th1520-lpi4a-*
+          zstd -d boot-lpi4a-*.zst
+          zstd -d root-lpi4a-*.zst
 
   upload_checksum:
     needs: mkrootfs
@@ -221,7 +260,7 @@ jobs:
           swap-storage: true
 
       - name: Download Built Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
 
       - name: Make Checksum file
         run: |
