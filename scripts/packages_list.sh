@@ -8,6 +8,7 @@ KERNEL_ahead="linux-headers-5.10.113-ahead linux-image-5.10.113-ahead linux-perf
 KERNEL_console="linux-headers-5.10.113-th1520 linux-image-5.10.113-th1520 linux-perf-thead th1520-boot-firmware"
 KERNEL_lpi4amain="linux-headers-6.8.1-lpi4a linux-image-6.8.1-lpi4a th1520-mainline-opensbi th1520-boot-firmware"
 KERNEL_meles="linux-headers-5.10.113-th1520 linux-image-5.10.113-th1520 linux-perf-thead th1520-boot-firmware"
+KERNEL_huiwei="linux-headers-5.10.113-th1520 linux-image-5.10.113-th1520 linux-perf-thead th1520-boot-firmware firmware-realtek"
 KERNEL=$(eval echo '$'"KERNEL_${BOARD}")
 
 PACKAGE_LIST=""

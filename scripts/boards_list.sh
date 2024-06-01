@@ -5,6 +5,7 @@ BOARD_AHEAD="ahead"
 BOARD_CONSOLE4A="console"
 BOARD_LPI4A_MAINLINE="lpi4amain"
 BOARD_MELES="meles"
+BOARD_HUIWEI="huiwei"
 
 check_board_vaild()
 {
@@ -25,6 +26,8 @@ check_board_vaild()
             echo "building lpi4a mainline image..."
         elif [ $BOARD == $BOARD_MELES ]; then
             echo "building Meles image..."
+        elif [ $BOARD == $BOARD_HUIWEI ]; then
+            echo "building huiwei image..."
         else
             echo "No matching board found, exit..."
             exit 3
