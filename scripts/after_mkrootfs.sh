@@ -150,9 +150,18 @@ EOF
     # Change hostname
     chroot $CHROOT_TARGET /bin/bash << EOF
 echo revyos-${BOARD} > /etc/hostname
-
 exit
 EOF
+
+    if [ "${BOARD}" == "${BOARD_HUIWEI}" ]; then
+      cp -vf ko/bq25700_charger.ko $CHROOT_TARGET/lib/modules/5.10.113-yocto-standard/kernel/drivers/power/supply/
+      cp -vf ko/cw2015_battery.ko $CHROOT_TARGET/lib/modules/5.10.113-yocto-standard/kernel/drivers/power/supply/
+      cp -vf ko/typec.ko $CHROOT_TARGET/lib/modules/5.10.113-yocto-standard/kernel/drivers/usb/typec/
+      cp -vf ko/tcpci_husb311.ko $CHROOT_TARGET/lib/modules/5.10.113-yocto-standard/kernel/drivers/usb/typec/tcpm/
+      cp -vf ko/tcpci.ko $CHROOT_TARGET/lib/modules/5.10.113-yocto-standard/kernel/drivers/usb/typec/tcpm/
+      cp -vf ko/tcpm.ko $CHROOT_TARGET/lib/modules/5.10.113-yocto-standard/kernel/drivers/usb/typec/tcpm/
+      chroot "$CHROOT_TARGET" sh -c "depmod 5.10.113-yocto-standard -a"
+    fi
 
     # remove openssh keys
     rm -v rootfs/etc/ssh/ssh_host_*
