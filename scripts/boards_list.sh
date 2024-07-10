@@ -3,6 +3,7 @@
 BOARD_LPI4A="lpi4a"
 BOARD_AHEAD="ahead"
 BOARD_CONSOLE4A="console"
+BOARD_LAPTOP4A="laptop"
 BOARD_LPI4A_MAINLINE="lpi4amain"
 BOARD_MELES="meles"
 
@@ -21,6 +22,8 @@ check_board_vaild()
             echo "building AHead image..."
         elif [ $BOARD == $BOARD_CONSOLE4A ]; then
             echo "building Console4A image..."
+        elif [ $BOARD == $BOARD_LAPTOP4A ]; then
+            echo "building Laptop4A image..."
         elif [ $BOARD == $BOARD_LPI4A_MAINLINE ]; then
             echo "building lpi4a mainline image..."
         elif [ $BOARD == $BOARD_MELES ]; then
