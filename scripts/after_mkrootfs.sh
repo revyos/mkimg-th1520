@@ -57,7 +57,9 @@ after_mkrootfs()
     fi
 
     # Using on chip 2D accelerator for quicker window & menu drawing
-    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_AHEAD}" ] || [ "${BOARD}" == "${BOARD_MELES}" ]; then
+    # Note: on Console 4A, DSI+HDMI dual screen will have problem for now because of xfce4-display-settings
+    # (xfce4-display-settings can't handle rotated DSI screen + HDMI screen correctly, using xrandr or arandr is fine)
+    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_AHEAD}" ] || [ "${BOARD}" == "${BOARD_MELES}" ]; then
         cat << EOF > "$CHROOT_TARGET"/usr/share/X11/xorg.conf.d/10-gc620.conf
 Section "Device"
 	Identifier "dc8200"
