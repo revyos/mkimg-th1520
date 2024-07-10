@@ -18,7 +18,7 @@ after_mkrootfs()
         cp -rp addons/lpi4a-bt/rootfs/usr/local/bin/rtk_hciattach rootfs/usr/local/bin/
         cp -rp addons/etc/systemd/system/auto-hciattach.service rootfs/etc/systemd/system/
     fi
-    if [ "${BOARD}" == "${BOARD_CONSOLE4A}" ]; then
+    if [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_LAPTOP4A}" ]; then
         echo "console specific: Add AIC8800 Bluetooth Service"
         # Add Bluetooth firmware and service
         cp -rp addons/lpi4a-bt/rootfs/usr/local/bin/rtk_hciattach rootfs/usr/local/bin/
@@ -32,7 +32,7 @@ after_mkrootfs()
     # Install system services
     chroot "$CHROOT_TARGET" sh -c "systemctl enable pvrsrvkm"
     chroot "$CHROOT_TARGET" sh -c "systemctl enable firstboot"
-    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ]; then
+    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_LAPTOP4A}" ]; then
         echo "lpi4a specific: Enable auto-hciattach Service"
         chroot "$CHROOT_TARGET" sh -c "systemctl enable auto-hciattach"
     fi
@@ -43,7 +43,7 @@ after_mkrootfs()
 
     # Chromium add "--no-sandbox --use-gl=egl" flags
     # replace "Exec=/usr/bin/chromium %U" to "Exec=/usr/bin/chromium --no-sandbox --use-gl=egl %U"
-    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_AHEAD}" ] || [ "${BOARD}" == "${BOARD_MELES}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ]; then
+    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_AHEAD}" ] || [ "${BOARD}" == "${BOARD_MELES}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_LAPTOP4A}" ]; then
         sed -i "s/Exec=\/usr\/bin\/chromium/Exec=\/usr\/bin\/chromium --no-sandbox --use-gl=egl/gi" "$CHROOT_TARGET"/usr/share/applications/chromium.desktop
 
         # Temp add HDMI audio output on Volume control
@@ -59,7 +59,7 @@ after_mkrootfs()
     # Using on chip 2D accelerator for quicker window & menu drawing
     # Note: on Console 4A, DSI+HDMI dual screen will have problem for now because of xfce4-display-settings
     # (xfce4-display-settings can't handle rotated DSI screen + HDMI screen correctly, using xrandr or arandr is fine)
-    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_AHEAD}" ] || [ "${BOARD}" == "${BOARD_MELES}" ]; then
+    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_LAPTOP4A}" ] || [ "${BOARD}" == "${BOARD_AHEAD}" ] || [ "${BOARD}" == "${BOARD_MELES}" ]; then
         cat << EOF > "$CHROOT_TARGET"/usr/share/X11/xorg.conf.d/10-gc620.conf
 Section "Device"
 	Identifier "dc8200"
@@ -77,7 +77,7 @@ EOF
     fi
 
     # Setup branding related
-    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ]; then
+    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_LAPTOP4A}" ]; then
         chroot "$CHROOT_TARGET" sh -c "apt install -y $BRANDING "
         rm -vr "$CHROOT_TARGET"/etc/update-motd.d
         cp -rp addons/etc/update-motd.d "$CHROOT_TARGET"/etc/
@@ -143,7 +143,7 @@ EOF
     chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,netdev,bluetooth,lp debian"
     chroot "$CHROOT_TARGET" sh -c "echo 'debian:debian' | chpasswd"
 
-    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ]; then
+    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_LAPTOP4A}" ]; then
         echo "lpi4a specific: Add sipeed user"
         chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,netdev,bluetooth,lp sipeed"
         chroot "$CHROOT_TARGET" sh -c "echo 'sipeed:licheepi' | chpasswd"
