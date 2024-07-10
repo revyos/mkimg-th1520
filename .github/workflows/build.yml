@@ -53,7 +53,7 @@ jobs:
             ls -al /usr/bin/qemu-riscv64-static
             sudo dpkg-reconfigure binfmt-support
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: qemu-riscv64-static-ci
           path: /usr/bin/qemu-riscv64-static
@@ -70,7 +70,7 @@ jobs:
                 mv ${CREATE_TARBALL} ../
               popd
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: common_revyos_rootfs
           path: ${{ env.CREATE_TARBALL }}
@@ -116,7 +116,7 @@ jobs:
               sudo apt install ./revyos-keyring_2023.06.12_all.deb
 
       - name: Download Built Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           path: ${{ env.ARTIFACTS_DIR }}
 
@@ -173,7 +173,7 @@ jobs:
             popd
 
       - name: 'Upload Artifact EMMC'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           retention-days: 30
           name: th1520-${{ env.BOARD }}-${{ env.BUILD_ID }}
@@ -183,7 +183,7 @@ jobs:
                   mkimg-th1520/SHA512SUMS
       
       - name: 'Upload Artifact SDCARD'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           retention-days: 30
           name: th1520-sdcard-${{ env.BOARD }}-${{ env.BUILD_ID }}
@@ -221,7 +221,7 @@ jobs:
           swap-storage: true
 
       - name: Download Built Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
 
       - name: Make Checksum file
         run: |
