@@ -3,7 +3,7 @@
 source $(pwd)/scripts/boards_list.sh
 
 # == kernel variables ==
-KERNEL_lpi4a="linux-headers-5.10.113-th1520 linux-image-5.10.113-th1520 linux-perf-thead th1520-boot-firmware"
+KERNEL_lpi4a="linux-headers-6.6.48-th1520 linux-image-6.6.48-th1520 th1520-mainline-opensbi th1520-boot-firmware firmware-realtek"
 KERNEL_ahead="linux-headers-5.10.113-ahead linux-image-5.10.113-ahead linux-perf-thead th1520-boot-firmware"
 KERNEL_console="linux-headers-5.10.113-th1520 linux-image-5.10.113-th1520 linux-perf-thead th1520-boot-firmware"
 KERNEL_laptop="linux-headers-5.10.113-th1520 linux-image-5.10.113-th1520 linux-perf-thead th1520-boot-firmware"
