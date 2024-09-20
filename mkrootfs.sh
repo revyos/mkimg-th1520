@@ -4,7 +4,7 @@ set -e
 # BOARD=${BOARD:-lpi4a} # lpi4a, ahead
 BOOT_SIZE=500M
 BOOT_IMG=""
-ROOT_SIZE=4G
+ROOT_SIZE=5G
 ROOT_IMG=""
 CHROOT_TARGET=rootfs
 
