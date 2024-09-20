@@ -7,10 +7,10 @@ make_rootfs_tarball()
     mmdebstrap --architectures=riscv64 \
         --include="$PACKAGE_LIST" \
         sid $1 \
-        "deb https://mirror.iscas.ac.cn/revyos/revyos-gles-21/ revyos-gles-21 main" \
-        "deb https://mirror.iscas.ac.cn/revyos/revyos-base/ sid main contrib non-free non-free-firmware" \
-        "deb https://mirror.iscas.ac.cn/revyos/revyos-kernels/ revyos-kernels main" \
-        "deb https://mirror.iscas.ac.cn/revyos/revyos-addons/ revyos-addons main"
+        "deb [trusted=yes] https://mirror.iscas.ac.cn/revyos/dev/revyos-gles-21/ revyos-gles-21 main" \
+        "deb [trusted=yes] https://mirror.iscas.ac.cn/revyos/dev/revyos-kernels/ revyos-kernels main" \
+        "deb [trusted=yes] https://mirror.iscas.ac.cn/revyos/dev/revyos-addons/ revyos-addons main" \
+        "deb https://mirror.iscas.ac.cn/revyos/revyos-base/ sid main contrib non-free non-free-firmware"
 }
 
 make_rootfs()
