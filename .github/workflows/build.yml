@@ -149,8 +149,8 @@ jobs:
         with:
           repository: pengutronix/genimage
           path: genimage
-          ref: v17
-          
+          ref: v18
+
       - name: build genimage
         run: |
             pushd genimage
