@@ -126,7 +126,7 @@ jobs:
               sudo apt install -y gdisk dosfstools build-essential autoconf automake autotools-dev ninja-build make \
                                   libncurses-dev gawk flex bison openssl libssl-dev tree \
                                   gcc-riscv64-linux-gnu gfortran-riscv64-linux-gnu libgomp1-riscv64-cross \
-                                  qemu-user-static binfmt-support mmdebstrap libconfuse-dev mtools
+                                  qemu-user-static binfmt-support mmdebstrap libconfuse-dev mtools rsync
               wget https://mirror.iscas.ac.cn/revyos/revyos-addons/pool/main/r/revyos-keyring/revyos-keyring_2023.06.12_all.deb
               sudo apt install ./revyos-keyring_2023.06.12_all.deb
 
