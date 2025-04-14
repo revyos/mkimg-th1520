@@ -12,6 +12,11 @@ after_mkrootfs()
     # copy addons to rootfs
     cp -rp addons/lib/firmware rootfs/lib/
 
+    # Add chromium bookmark policy
+    # See https://github.com/revyos/revyos/issues/104
+    mkdir -p rootfs/usr/share/chromium
+    cp -p addons/chromium/initial_bookmarks.html rootfs/usr/share/chromium/
+
     if [ "${BOARD}" == "${BOARD_LPI4A}" ]; then
         echo "lpi4a specific: Add RTL8723DS Service"
         # Add Bluetooth firmware and service
@@ -50,7 +55,7 @@ after_mkrootfs()
         echo "load-module module-alsa-sink device=hw:0,2 tsched=0" >> "$CHROOT_TARGET"/etc/pulse/default.pa
 
         # Change xfce4-panel default web-browser icon to chromium
-        sed -i 's/xfce4-web-browser.desktop/chromium.desktop/g' "$CHROOT_TARGET"/etc/xdg/xfce4/panel/default.xml 
+        sed -i 's/xfce4-web-browser.desktop/chromium.desktop/g' "$CHROOT_TARGET"/etc/xdg/xfce4/panel/default.xml
 
         # Fix cann't connect bluetooth headphone
         sed -i 's/load-module module-bluetooth-policy/load-module module-bluetooth-policy auto_switch=false/g' "$CHROOT_TARGET"/etc/pulse/default.pa
@@ -115,7 +120,7 @@ EOF
         cp -rp addons/LicheeConsole4A/display-setup.desktop rootfs/etc/xdg/autostart/
 
         # Rotate lightdm screen using /opt/display-setup.sh
-        sed -i 's/#greeter-setup-script=/greeter-setup-script=\/opt\/display-setup.sh/g' "$CHROOT_TARGET"/etc/lightdm/lightdm.conf 
+        sed -i 's/#greeter-setup-script=/greeter-setup-script=\/opt\/display-setup.sh/g' "$CHROOT_TARGET"/etc/lightdm/lightdm.conf
     fi
 
     # Set locale to en_US.UTF-8 UTF-8
@@ -138,7 +143,7 @@ EOF
 
     # apt update
     # chroot "$CHROOT_TARGET" sh -c "apt update"
-    
+
     # Add user
     chroot "$CHROOT_TARGET" sh -c "useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,netdev,bluetooth,lp debian"
     chroot "$CHROOT_TARGET" sh -c "echo 'debian:debian' | chpasswd"
