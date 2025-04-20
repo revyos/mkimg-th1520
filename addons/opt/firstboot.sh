@@ -1,17 +1,5 @@
 #!/bin/sh
 
-# whiptail --infobox "Resizing filesystem..." 20 60
-
-# use all emmc free space for rootfs
-#parted -s /dev/mmcblk0 "resizepart 4 -0"
-growpart /dev/mmcblk0 4
-
-# refresh filesystem usable size
-resize2fs /dev/mmcblk0p2
-resize2fs /dev/mmcblk0p4
-
-# whiptail --infobox "Enable SWAP partition..." 20 60
-
 # formatand enable swap partition
 mkswap /dev/mmcblk0p3
 swapon -a

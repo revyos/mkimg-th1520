@@ -51,5 +51,7 @@ make_rootfs()
     fi
 
     # apt update
-    chroot "$CHROOT_TARGET" sh -c "apt update"
+    chroot "$CHROOT_TARGET" /bin/bash << EOF
+apt update
+EOF
 }
