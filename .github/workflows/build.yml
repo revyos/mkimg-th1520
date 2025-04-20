@@ -33,7 +33,7 @@ jobs:
         with:
           repository: revyos/qemu
           path: qemu
-          ref: ab8f84892a89feea60f1bb24432ff58ce6d2885c  # TODO: remove this line
+          ref: 222729c7455784dd855216d7a2bec4bd8f2a6800  # revyos-xuantie-9.0
 
       - name: build qemu
         run: |
