@@ -24,9 +24,9 @@ jobs:
               sudo apt install -y gdisk dosfstools build-essential autoconf automake autotools-dev ninja-build make \
                                   libncurses-dev gawk flex bison openssl libssl-dev tree \
                                   gcc-riscv64-linux-gnu gfortran-riscv64-linux-gnu libgomp1-riscv64-cross \
-                                  qemu-user-static binfmt-support mmdebstrap 
-              wget https://mirror.iscas.ac.cn/revyos/revyos-addons/pool/main/r/revyos-keyring/revyos-keyring_2023.06.12_all.deb
-              sudo apt install ./revyos-keyring_2023.06.12_all.deb
+                                  qemu-user-static binfmt-support mmdebstrap
+              wget https://mirror.isrc.ac.cn/revyos/revyos-addons/pool/main/r/revyos-keyring/revyos-keyring_2025.03.28_all.deb
+              sudo apt install ./revyos-keyring_2025.03.28_all.deb
 
       - name: Checkout qemu
         uses: actions/checkout@v4
@@ -127,8 +127,8 @@ jobs:
                                   libncurses-dev gawk flex bison openssl libssl-dev tree \
                                   gcc-riscv64-linux-gnu gfortran-riscv64-linux-gnu libgomp1-riscv64-cross \
                                   qemu-user-static binfmt-support mmdebstrap libconfuse-dev mtools rsync
-              wget https://mirror.iscas.ac.cn/revyos/revyos-addons/pool/main/r/revyos-keyring/revyos-keyring_2023.06.12_all.deb
-              sudo apt install ./revyos-keyring_2023.06.12_all.deb
+              wget https://mirror.iscas.ac.cn/revyos/revyos-addons/pool/main/r/revyos-keyring/revyos-keyring_2025.03.28_all.deb
+              sudo apt install ./revyos-keyring_2025.03.28_all.deb
 
       - name: Download Built Artifacts
         uses: actions/download-artifact@v4
@@ -196,7 +196,7 @@ jobs:
                   mkimg-th1520/*.ext4.zst
                   mkimg-th1520/SHA256SUMS
                   mkimg-th1520/SHA512SUMS
-      
+
       - name: 'Upload Artifact SDCARD'
         uses: actions/upload-artifact@v4
         with:
