@@ -170,14 +170,6 @@ useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,n
 echo 'debian:debian' | chpasswd
 EOF
 
-    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_LAPTOP4A}" ]; then
-        echo "lpi4a specific: Add sipeed user"
-        chroot "$CHROOT_TARGET" /bin/bash << EOF
-useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,netdev,bluetooth,lp sipeed
-echo 'sipeed:licheepi' | chpasswd
-EOF
-    fi
-
     # Change hostname
     chroot $CHROOT_TARGET /bin/bash << EOF
 echo revyos-${BOARD} > /etc/hostname
