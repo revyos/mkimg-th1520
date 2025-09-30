@@ -21,10 +21,6 @@ make_rootfs()
         make_rootfs_tarball $CHROOT_TARGET
     else
         tar xpvf $USE_TARBALL --xattrs-include='*.*' --numeric-owner -C $CHROOT_TARGET
-        wget https://github.com/ruyisdk/ruyi/releases/download/0.31.0/ruyi-0.31.0.riscv64
-        sudo mv ruyi-0.31.0.riscv64 $CHROOT_TARGET/usr/bin/ruyi
-        sudo chmod 0755 $CHROOT_TARGET/usr/bin/ruyi
-        sudo chown root:root $CHROOT_TARGET/usr/bin/ruyi
     fi
 
     # move /boot contents to other place
