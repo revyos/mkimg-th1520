@@ -32,7 +32,13 @@ create_sdcard()
     # Update fstab
     sed -i "s/mmcblk0/mmcblk1/g" $CHROOT_TARGET/etc/fstab
     # Update firstboot
-    sed -i "s/mmcblk0/mmcblk1/g" $CHROOT_TARGET/opt/firstboot.sh
+    if [ -f $CHROOT_TARGET/opt/firstboot.sh ]; then
+        sed -i "s/mmcblk0/mmcblk1/g" $CHROOT_TARGET/opt/firstboot.sh
+    fi
+    # Update cloud-init
+    if [ -f $CHROOT_TARGET/etc/cloud/revyos-data/user-data ]; then
+        sed -i "s/mmcblk0/mmcblk1/g" $CHROOT_TARGET/etc/cloud/revyos-data/user-data
+    fi
     # Update uboot
     sed -i "s/${EMMC_ROOT_UUID}/${SDCARD_ROOT_UUID}/g" $CHROOT_TARGET/etc/default/u-boot
     sed -i "s/${EMMC_ROOT_UUID}/${SDCARD_ROOT_UUID}/g" $CHROOT_TARGET/boot/extlinux/extlinux.conf

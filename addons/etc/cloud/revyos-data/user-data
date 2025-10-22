@@ -1,0 +1,56 @@
+#cloud-config
+
+# machine-id will be setup by cloud-init
+
+# Set the hostname
+hostname: th1520
+
+# Set the timezone
+timezone: "Asia/Shanghai"
+
+# Set the locale
+locale: "en_US.UTF-8 UTF-8"
+
+# Create a new user with password and add to common groups
+users:
+  - name: debian
+    lock_passwd: false
+    hashed_passwd: "$6$rounds=4096$9sq8MJlZfFO0mvG.$U/uUMcyx80i4TSvt8uf4XY6wFFXz.nbyhIC8hh5PNTT.6rGoTg76.Cgytd.YS5wk6lIVoFQbluS9t0K7K/z3.."
+    groups: [adm, cdrom, dialout, floppy, tape, sudo, input, audio, dip, video, plugdev, netdev, bluetooth, lp]
+    # sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    shell: /bin/bash
+    
+# Clean existing SSH keys
+ssh_pwauth: true
+disable_root: true
+ssh_deletekeys: true
+
+runcmd:
+# Disable iperf3 service
+  - systemctl disable iperf3
+  - systemctl stop iperf3
+# enable swap
+  - mkswap /dev/mmcblk0p3
+  - swapon -a
+# regenerate fstab
+  - mount /dev/mmcblk0p2 /boot
+  - genfstab -t PARTUUID / > /etc/fstab
+  - update-initramfs -u
+# set hosts
+  - echo "127.0.1.1 $(hostname)" >> /etc/hosts
+# refresh so libs
+  - rm -v /etc/ld.so.cache
+  - ldconfig
+# Clean apt caches
+  - rm -r /var/lib/apt/lists/*
+# finish cloud-init setup
+  - touch /etc/cloud/cloud-init.disabled
+
+# Expand root partition to utilize max disk free space
+growpart:
+  devices: [/]
+  mode: auto
+
+resize_rootfs: noblock
+
+final_message: "RevyOS Cloud-init finished."
