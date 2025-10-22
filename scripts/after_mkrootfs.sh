@@ -112,6 +112,9 @@ ln -s /usr/share/images/ruyisdk/ruyi-1-1920x1080.png /usr/share/images/desktop-b
 ln -s /usr/share/images/ruyisdk/ruyi-2-1920x1080.png /usr/share/images/desktop-base/login-background.svg
 EOF
     fi
+    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_LAPTOP4A}" ]; then
+        cp -rp addons/usr/share/alsa "$CHROOT_TARGET"/usr/share/
+    fi
 
     # lpi4amain related (disable GPU, add perf)
     if [ "${BOARD}" == "${BOARD_LPI4A_MAINLINE}" ]; then
