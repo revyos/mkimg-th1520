@@ -30,14 +30,13 @@ after_mkrootfs()
         cp -rp addons/etc/systemd/system/auto-hciattach.service "$CHROOT_TARGET"/etc/systemd/system/
     fi
 
-    # Add firstboot service
-    cp -rp addons/etc/systemd/system/firstboot.service "$CHROOT_TARGET"/etc/systemd/system/
-    cp -rp addons/opt/firstboot.sh "$CHROOT_TARGET"/opt/
+    # # Add firstboot service
+    # cp -rp addons/etc/systemd/system/firstboot.service "$CHROOT_TARGET"/etc/systemd/system/
+    # cp -rp addons/opt/firstboot.sh "$CHROOT_TARGET"/opt/
 
     # Install system services
     chroot "$CHROOT_TARGET" /bin/bash << EOF
 systemctl enable pvrsrvkm
-systemctl enable firstboot
 EOF
 
     if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_LAPTOP4A}" ]; then
@@ -138,60 +137,8 @@ EOF
         sed -i 's/#greeter-setup-script=/greeter-setup-script=\/opt\/display-setup.sh/g' "$CHROOT_TARGET"/etc/lightdm/lightdm.conf
     fi
 
-    # Set locale to en_US.UTF-8 UTF-8
-    chroot "$CHROOT_TARGET" /bin/bash << EOF
-echo 'locales locales/default_environment_locale select en_US.UTF-8' | debconf-set-selections
-echo 'locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8' | debconf-set-selections
-rm /etc/locale.gen
-dpkg-reconfigure --frontend noninteractive locales
-EOF
-
-    # Set default timezone to Asia/Shanghai
-    chroot "$CHROOT_TARGET" /bin/bash << EOF
-ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-echo "Asia/Shanghai" > /etc/timezone
-EOF
-
-    # Set up fstab
-    chroot $CHROOT_TARGET /bin/bash << EOF
-echo '/dev/mmcblk0p4 /   auto    defaults,x-systemd.growfs    1 1' >> /etc/fstab
-echo '/dev/mmcblk0p2 /boot   auto    defaults,x-systemd.growfs    0 0' >> /etc/fstab
-EOF
-
-     # Add cloud-initramfs-growroot for x-systemd.growfs
-     chroot $CHROOT_TARGET /bin/bash << EOF
-export DEBIAN_FRONTEND=noninteractive
-apt install -y cloud-initramfs-growroot
-EOF
-
-    # apt update
-    # chroot "$CHROOT_TARGET" sh -c "apt update"
-
-    # Add user
-    chroot "$CHROOT_TARGET" /bin/bash << EOF
-useradd -m -s /bin/bash -G adm,cdrom,floppy,sudo,input,audio,dip,video,plugdev,netdev,bluetooth,lp debian
-echo 'debian:debian' | chpasswd
-EOF
-
-    # Change hostname
-    chroot $CHROOT_TARGET /bin/bash << EOF
-echo revyos-${BOARD} > /etc/hostname
-EOF
-
-    # Disable iperf3
-    chroot $CHROOT_TARGET /bin/bash << EOF
-systemctl disable iperf3
-EOF
-
-    # remove openssh keys
-    rm -v "$CHROOT_TARGET"/etc/ssh/ssh_host_*
-
-    # refresh so libs
-    chroot "$CHROOT_TARGET" /bin/bash << EOF
-rm -v /etc/ld.so.cache
-ldconfig
-EOF
-
-    # Clean apt caches
-    rm -r "$CHROOT_TARGET"/var/lib/apt/lists/*
+    # copy cloud-init config
+    cp -rp addons/etc/cloud/cloud.cfg.d/00_nocloud.cfg "$CHROOT_TARGET"/etc/cloud/cloud.cfg.d/00_nocloud.cfg
+    cp -rp addons/etc/cloud/revyos-data "$CHROOT_TARGET"/etc/cloud/
+    sed -i "s/hostname: .*$/hostname: revyos-${BOARD}/g" "$CHROOT_TARGET"/etc/cloud/revyos-data/user-data
 }
