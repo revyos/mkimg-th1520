@@ -22,13 +22,13 @@ create_sdcard()
     mount "${LOOP_DEVICE}"p2 $CHROOT_TARGET/boot
 
     # Fix wallpaper, copy file again
-    NEW_TARGET="${CHROOT_TARGET}_new"
-    mkdir -p $NEW_TARGET
-    mount ${ROOT_IMG} $NEW_TARGET
-    mount ${BOOT_IMG} $NEW_TARGET/boot
-    rsync -av --delete $NEW_TARGET/* $CHROOT_TARGET/
-    umount -l $NEW_TARGET
-    rm -rvf $NEW_TARGET
+    EXT4_TARGET="${CHROOT_TARGET}_ext4"
+    mkdir -p $EXT4_TARGET
+    mount ${ROOT_IMG} $EXT4_TARGET
+    mount ${BOOT_IMG} $EXT4_TARGET/boot
+    rsync -av --delete $EXT4_TARGET/* $CHROOT_TARGET/
+    umount -l $EXT4_TARGET
+    rm -rvf $EXT4_TARGET
     # Update fstab
     sed -i "s/mmcblk0/mmcblk1/g" $CHROOT_TARGET/etc/fstab
     # Update firstboot
@@ -46,4 +46,5 @@ create_sdcard()
     # clean sdcard
     umount -l $CHROOT_TARGET
     losetup -d "${LOOP_DEVICE}"
+    rm -vf ${SD_TARGET}
 }
