@@ -43,6 +43,11 @@ runcmd:
   - ldconfig
 # Clean apt caches
   - rm -r /var/lib/apt/lists/*
+# locales fix
+  - echo 'locales locales/default_environment_locale select en_US.UTF-8' | debconf-set-selections
+  - echo 'locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8' | debconf-set-selections
+  - rm /etc/locale.gen
+  - dpkg-reconfigure --frontend noninteractive locales
 # finish cloud-init setup
   - touch /etc/cloud/cloud-init.disabled
 
