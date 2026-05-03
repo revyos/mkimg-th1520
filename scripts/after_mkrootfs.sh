@@ -119,8 +119,6 @@ EOF
             echo "lpi4amain No GPU: Disable lightdm"
             chroot "$CHROOT_TARGET" sh -c "systemctl disable lightdm"
         fi
-        # Install perf-th1520 (new perf for c9xx pmu)
-        cp -rp addons/lpi4amain/perf-th1520 rootfs/bin
     fi
 
     # Copy files for Console4A
