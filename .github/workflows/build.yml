@@ -29,7 +29,7 @@ jobs:
               sudo apt install ./revyos-keyring_2025.03.28_all.deb
 
       - name: Checkout qemu
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: revyos/qemu
           path: qemu
@@ -53,13 +53,13 @@ jobs:
             ls -al /usr/bin/qemu-riscv64-static
             sudo dpkg-reconfigure binfmt-support
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: qemu-riscv64-static-ci
           path: /usr/bin/qemu-riscv64-static
 
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: 'mkimg-th1520'  # TODO: make this name a global variable
 
@@ -70,7 +70,7 @@ jobs:
                 mv ${CREATE_TARBALL} ../
               popd
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: common_revyos_rootfs
           path: ${{ env.CREATE_TARBALL }}
@@ -86,20 +86,20 @@ jobs:
     env:
       BOARD: ${{ matrix.model }}
     steps:
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
+      - name: Free Disk Space
+        uses: endersonmenezes/free-disk-space@v3  # Use @main for latest, @v3 for stable
         with:
-          # this might remove tools that are actually needed,
-          # if set to "true" but frees about 6 GB
-          tool-cache: true
-          # all of these default to true, but feel free to set to
-          # "false" if necessary for your workflow
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
+          remove_android: true
+          remove_dotnet: true
+          remove_haskell: true
+          remove_tool_cache: true
+          remove_swap: true
+          remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* temurin-* *llvm* mysql* dotnet-sdk-*"
+          remove_packages_one_command: true
+          remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell /usr/local/julia /usr/local/aws-cli /usr/local/aws-sam-cli /usr/share/gradle"
+          rm_cmd: "rm"  # Use 'rmz' for faster deletion (default: 'rm')
+          rmz_version: "3.1.1"  # Required when rm_cmd is 'rmz'
+          testing: false
 
       - name:  Run Configuration Commands
         run: |
@@ -131,7 +131,7 @@ jobs:
               sudo apt install ./revyos-keyring_2025.03.28_all.deb
 
       - name: Download Built Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: ${{ env.ARTIFACTS_DIR }}
 
@@ -145,7 +145,7 @@ jobs:
               echo "USE_TARBALL=${ARTIFACTS_DIR}/common_revyos_rootfs/common_revyos_rootfs.tar" >> $GITHUB_ENV
 
       - name: Checkout genimage
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: pengutronix/genimage
           path: genimage
@@ -161,7 +161,7 @@ jobs:
             popd
 
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
             path: 'mkimg-th1520'  # TODO: make this name a global variable
 
@@ -188,7 +188,7 @@ jobs:
             popd
 
       - name: 'Upload Artifact EMMC'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           retention-days: 30
           name: th1520-${{ env.BOARD }}-${{ env.BUILD_ID }}
@@ -198,7 +198,7 @@ jobs:
                   mkimg-th1520/SHA512SUMS
 
       - name: 'Upload Artifact SDCARD'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           retention-days: 30
           name: th1520-sdcard-${{ env.BOARD }}-${{ env.BUILD_ID }}
@@ -208,7 +208,7 @@ jobs:
                   mkimg-th1520/SHA512SUMS
 
       - name: 'Upload Release'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
@@ -220,23 +220,23 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-22.04
     steps:
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
+      - name: Free Disk Space
+        uses: endersonmenezes/free-disk-space@v3  # Use @main for latest, @v3 for stable
         with:
-          # this might remove tools that are actually needed,
-          # if set to "true" but frees about 6 GB
-          tool-cache: true
-          # all of these default to true, but feel free to set to
-          # "false" if necessary for your workflow
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
+          remove_android: true
+          remove_dotnet: true
+          remove_haskell: true
+          remove_tool_cache: true
+          remove_swap: true
+          remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* temurin-* *llvm* mysql* dotnet-sdk-*"
+          remove_packages_one_command: true
+          remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell /usr/local/julia /usr/local/aws-cli /usr/local/aws-sam-cli /usr/share/gradle"
+          rm_cmd: "rm"  # Use 'rmz' for faster deletion (default: 'rm')
+          rmz_version: "3.1.1"  # Required when rm_cmd is 'rmz'
+          testing: false
 
       - name: Download Built Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
 
       - name: Make Checksum file
         run: |
@@ -245,7 +245,7 @@ jobs:
               sha512sum *.zst > SHA512SUMS
 
       - name: 'Upload checksum'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
                   SHA256SUMS
