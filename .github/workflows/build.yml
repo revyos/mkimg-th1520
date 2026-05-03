@@ -25,7 +25,7 @@ jobs:
                                   libncurses-dev gawk flex bison openssl libssl-dev tree \
                                   gcc-riscv64-linux-gnu gfortran-riscv64-linux-gnu libgomp1-riscv64-cross \
                                   qemu-user-static binfmt-support mmdebstrap
-              wget https://mirror.isrc.ac.cn/revyos/revyos-addons/pool/main/r/revyos-keyring/revyos-keyring_2025.03.28_all.deb
+              wget https://fast-mirror.isrc.ac.cn/revyos/revyos-addons/pool/main/r/revyos-keyring/revyos-keyring_2025.03.28_all.deb
               sudo apt install ./revyos-keyring_2025.03.28_all.deb
 
       - name: Checkout qemu
