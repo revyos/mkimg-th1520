@@ -67,7 +67,7 @@ EOF
     # Using on chip 2D accelerator for quicker window & menu drawing
     # Note: on Console 4A, DSI+HDMI dual screen will have problem for now because of xfce4-display-settings
     # (xfce4-display-settings can't handle rotated DSI screen + HDMI screen correctly, using xrandr or arandr is fine)
-    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_LAPTOP4A}" ] || [ "${BOARD}" == "${BOARD_AHEAD}" ] || [ "${BOARD}" == "${BOARD_MELES}" ]; then
+    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_AHEAD}" ] || [ "${BOARD}" == "${BOARD_MELES}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_LAPTOP4A}" ]; then
         echo "gc620 conf is installed in xserver-xorg-video-th1520"
     else
         rm -rvf "$CHROOT_TARGET"/usr/share/X11/xorg.conf.d/10-gc620.conf
@@ -84,7 +84,7 @@ EOF
     fi
 
     # Setup branding related
-    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_LAPTOP4A}" ]; then
+    if [ "${BOARD}" == "${BOARD_LPI4A}" ] || [ "${BOARD}" == "${BOARD_AHEAD}" ] || [ "${BOARD}" == "${BOARD_MELES}" ] || [ "${BOARD}" == "${BOARD_CONSOLE4A}" ] || [ "${BOARD}" == "${BOARD_LAPTOP4A}" ]; then
         chroot "$CHROOT_TARGET" /bin/bash << EOF
 apt install -y $BRANDING
 rm -vr /etc/update-motd.d

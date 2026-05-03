@@ -3,12 +3,15 @@
 source $(pwd)/scripts/boards_list.sh
 
 # == kernel variables ==
-KERNEL_lpi4a="linux-headers-6.6-th1520 linux-image-6.6-th1520 th1520-mainline-opensbi th1520-boot-firmware firmware-realtek aic8800-firmware"
-KERNEL_ahead="linux-headers-6.6-th1520 linux-image-6.6-th1520 th1520-mainline-opensbi th1520-boot-firmware"
-KERNEL_console="linux-headers-6.6-th1520 linux-image-6.6-th1520 th1520-mainline-opensbi th1520-boot-firmware aic8800-firmware"
-KERNEL_laptop="linux-headers-6.6-th1520 linux-image-6.6-th1520 th1520-mainline-opensbi th1520-boot-firmware aic8800-firmware"
-KERNEL_lpi4amain="linux-headers-6.6-th1520 linux-image-6.6-th1520 th1520-mainline-opensbi th1520-boot-firmware firmware-realtek aic8800-firmware"
-KERNEL_meles="linux-headers-6.6-th1520 linux-image-6.6-th1520 th1520-mainline-opensbi th1520-boot-firmware firmware-realtek"
+FRIMWARE="th1520-mainline-opensbi th1520-boot-firmware firmware-realtek aic8800-firmware"
+VENDOR_66_KERNEL="linux-headers-6.6-th1520 linux-image-6.6-th1520"
+BPO_MAINLINE_KERNEL="linux-headers-riscv64 linux-image-riscv64"
+KERNEL_lpi4a="${VENDOR_66_KERNEL} ${FRIMWARE}"
+KERNEL_ahead="${VENDOR_66_KERNEL} ${FRIMWARE}"
+KERNEL_console="${VENDOR_66_KERNEL} ${FRIMWARE}"
+KERNEL_laptop="${VENDOR_66_KERNEL} ${FRIMWARE}"
+KERNEL_meles="${VENDOR_66_KERNEL} ${FRIMWARE}"
+KERNEL_lpi4amain="${BPO_MAINLINE_KERNEL} ${FRIMWARE}"
 KERNEL=$(eval echo '$'"KERNEL_${BOARD}")
 
 PACKAGE_LIST=""
