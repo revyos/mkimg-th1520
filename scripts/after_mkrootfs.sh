@@ -97,6 +97,7 @@ apt install -y lsb-release figlet
 rm -vr /etc/update-motd.d
 EOF
         cp -rp addons/etc/update-motd.d "$CHROOT_TARGET"/etc/
+        cp -vr addons/th1520main/powervr "$CHROOT_TARGET"/lib/firmware/
     fi
     if [ "${BOARD}" != "${BOARD_TH1520_MAINLINE}" ]; then
         # Wallpaper
