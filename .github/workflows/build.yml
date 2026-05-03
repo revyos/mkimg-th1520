@@ -82,7 +82,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        model: [lpi4a, ahead, console, laptop, lpi4amain, meles]
+        model: [lpi4a, ahead, console, laptop, th1520main, meles]
 
     runs-on: ubuntu-22.04
     env:

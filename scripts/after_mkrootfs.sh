@@ -73,7 +73,7 @@ EOF
         rm -rvf "$CHROOT_TARGET"/usr/share/X11/xorg.conf.d/10-gc620.conf
     fi
 
-    if [ "${BOARD}" == "${BOARD_LPI4A_MAINLINE}" ]; then
+    if [ "${BOARD}" == "${BOARD_TH1520_MAINLINE}" ]; then
         # No space left on device
         echo "skip install mpv parole th1520-vpu libgl4es th1520-npu"
     else
@@ -90,7 +90,7 @@ apt install -y $BRANDING
 rm -vr /etc/update-motd.d
 EOF
         cp -rp addons/etc/update-motd.d "$CHROOT_TARGET"/etc/
-    elif [ "${BOARD}" == "${BOARD_LPI4A_MAINLINE}" ]; then
+    elif [ "${BOARD}" == "${BOARD_TH1520_MAINLINE}" ]; then
         # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1029394
         chroot "$CHROOT_TARGET" /bin/bash << EOF
 apt install -y lsb-release figlet
@@ -98,7 +98,7 @@ rm -vr /etc/update-motd.d
 EOF
         cp -rp addons/etc/update-motd.d "$CHROOT_TARGET"/etc/
     fi
-    if [ "${BOARD}" != "${BOARD_LPI4A_MAINLINE}" ]; then
+    if [ "${BOARD}" != "${BOARD_TH1520_MAINLINE}" ]; then
         # Wallpaper
         cp -rp addons/usr/share/images/ruyisdk "$CHROOT_TARGET"/usr/share/images/
         chroot "$CHROOT_TARGET" /bin/bash << EOF
@@ -112,11 +112,11 @@ EOF
         cp -rp addons/usr/share/alsa "$CHROOT_TARGET"/usr/share/
     fi
 
-    # lpi4amain related (disable GPU, add perf)
-    if [ "${BOARD}" == "${BOARD_LPI4A_MAINLINE}" ]; then
+    # th1520main related (disable GPU, add perf)
+    if [ "${BOARD}" == "${BOARD_TH1520_MAINLINE}" ]; then
         # lpi4a-main No GPU
         if ( chroot "$CHROOT_TARGET" sh -c "systemctl list-unit-files lightdm.service" ); then
-            echo "lpi4amain No GPU: Disable lightdm"
+            echo "th1520main No GPU: Disable lightdm"
             chroot "$CHROOT_TARGET" sh -c "systemctl disable lightdm"
         fi
     fi

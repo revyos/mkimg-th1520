@@ -4,7 +4,7 @@ BOARD_LPI4A="lpi4a"
 BOARD_AHEAD="ahead"
 BOARD_CONSOLE4A="console"
 BOARD_LAPTOP4A="laptop"
-BOARD_LPI4A_MAINLINE="lpi4amain"
+BOARD_TH1520_MAINLINE="th1520main"
 BOARD_MELES="meles"
 
 check_board_vaild()
@@ -24,10 +24,10 @@ check_board_vaild()
             echo "building Console4A image..."
         elif [ $BOARD == $BOARD_LAPTOP4A ]; then
             echo "building Laptop4A image..."
-        elif [ $BOARD == $BOARD_LPI4A_MAINLINE ]; then
-            echo "building lpi4a mainline image..."
         elif [ $BOARD == $BOARD_MELES ]; then
             echo "building Meles image..."
+        elif [ $BOARD == $BOARD_TH1520_MAINLINE ]; then
+            echo "building TH1520 mainline image..."
         else
             echo "No matching board found, exit..."
             exit 3
